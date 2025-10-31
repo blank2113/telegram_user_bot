@@ -13,7 +13,7 @@ export default function Home() {
   const lastTapRef = useRef(0);
 
   const [count, setCount] = useState(0);
-  const [value, setValue] = useState(55);
+  const [value, setValue] = useState(45);
   const [animKey, setAnimKey] = useState(0);
   const [pops, setPops] = useState<Pop[]>([]);
 
