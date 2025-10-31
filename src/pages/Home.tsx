@@ -37,9 +37,8 @@ export default function Home() {
     if (!cRect || !aRect) return;
 
     const x = aRect.left + aRect.width / 15 - cRect.left;
-    const x2 = aRect.left + aRect.width / 3 - cRect.left;
+
     const y = aRect.top + aRect.height / 15 - cRect.top - aRect.height * 0.18;
-    const y2 = aRect.top + aRect.height / 3 - cRect.top - aRect.height * 0.18;
 
     spawnPop(x, y);
   };
