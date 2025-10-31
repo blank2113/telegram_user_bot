@@ -1,8 +1,8 @@
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Progress from "../components/progress/Progress";
 import touchAv from "../assets/icons/touchAv.svg";
-import coin from "../assets/icons/coin.svg";
+// import coin from "../assets/icons/coin.svg";
 
 const STEP = 1;
 type Pop = { id: number; x: number; y: number };
@@ -17,7 +17,7 @@ export default function Home() {
 
   const [count, setCount] = useState(0);
   const [value, setValue] = useState(45);
-  const [pops, setPops] = useState<Pop[]>([]);
+  const [_, setPops] = useState<Pop[]>([]);
 
   // Обновление размеров wrapper и avatar через ResizeObserver (кэшируем DOMRect)
   useEffect(() => {
@@ -115,11 +115,11 @@ export default function Home() {
       <Progress value={value} height={12} max={1000} />
 
       {/* слой с "+1" поверх всего */}
-      <div className='pointer-events-none absolute inset-0 z-30'>
+      {/* <div className='pointer-events-none absolute inset-0 z-30'>
         {pops.map((p) => (
           <PlusOne key={p.id} x={p.x} y={p.y} />
         ))}
-      </div>
+      </div> */}
 
       {/* Тап-таргет по центру снизу */}
       <motion.button
@@ -150,23 +150,23 @@ export default function Home() {
 }
 
 /** Всплывающий "+1" в точке (x, y) — оптимизированный */
-const PlusOne = memo(function PlusOne({ x, y }: { x: number; y: number }) {
-  const jitterX = (Math.random() - 0.5) * 12;
-  const jitterY = (Math.random() - 0.5) * 6;
+// const PlusOne = memo(function PlusOne({ x, y }: { x: number; y: number }) {
+//   const jitterX = (Math.random() - 0.5) * 12;
+//   const jitterY = (Math.random() - 0.5) * 6;
 
-  return (
-    <motion.img
-      initial={{ x: x + jitterX, y: y + jitterY, opacity: 0, scale: 0.9 }}
-      animate={{ x: x + jitterX, y: y - 36, opacity: 1, scale: 1 }}
-      exit={{ opacity: 0 }}
-      src={coin}
-      alt=''
-      transition={{ duration: 0.8, ease: "easeOut" }}
-      className='absolute -translate-x-1/2 -translate-y-1/2 select-none
-                 w-[40px] h-[40px] font-extrabold text-white
-                 transform-gpu will-change-transform
-                 drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)]'
-      style={{ left: x, top: y }}
-    />
-  );
-});
+//   return (
+//     <motion.img
+//       initial={{ x: x + jitterX, y: y + jitterY, opacity: 0, scale: 0.9 }}
+//       animate={{ x: x + jitterX, y: y - 36, opacity: 1, scale: 1 }}
+//       exit={{ opacity: 0 }}
+//       src={coin}
+//       alt=''
+//       transition={{ duration: 0.8, ease: "easeOut" }}
+//       className='absolute -translate-x-1/2 -translate-y-1/2 select-none
+//                  w-[40px] h-[40px] font-extrabold text-white
+//                  transform-gpu will-change-transform
+//                  drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)]'
+//       style={{ left: x, top: y }}
+//     />
+//   );
+// });
