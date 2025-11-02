@@ -152,7 +152,6 @@ export default function Home() {
     const N = low ? 3 : 6; // fewer particles on low-end
     const baseSize = Math.max(8, Math.min(28, wrapRect.width * 0.03));
 
-    const now = performance.now();
     for (let i = 0; i < N; i++) {
       const angle = (Math.random() - 0.5) * Math.PI * 0.7;
       const speed = (0.6 + Math.random() * 1.1) * (low ? 0.7 : 1);
