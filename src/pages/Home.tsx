@@ -2,110 +2,209 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Progress from "../components/progress/Progress";
 import touchAv from "../assets/icons/touchAv.svg";
-// import coin from "../assets/icons/coin.svg";
 
 const STEP = 1;
-type Pop = { id: number; x: number; y: number };
+
+type Particle = {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  life: number;
+  ttl: number;
+  size: number;
+  rot: number;
+  alpha: number;
+};
 
 export default function Home() {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const avatarRef = useRef<HTMLImageElement | null>(null);
-  const lastTapRef = useRef(0);
-
-  const avatarRectRef = useRef<DOMRect | null>(null);
-  const wrapRectRef = useRef<DOMRect | null>(null);
 
   const [count, setCount] = useState(0);
   const [value, setValue] = useState(45);
-  const [_, setPops] = useState<Pop[]>([]);
 
-  // Обновление размеров wrapper и avatar через ResizeObserver (кэшируем DOMRect)
+  // particles are stored in ref to avoid React re-renders
+  const particlesRef = useRef<Particle[]>([]);
+  const rafRef = useRef<number | null>(null);
+  const lastTsRef = useRef<number | null>(null);
+
+  // cached rects
+  const wrapRectRef = useRef<DOMRect | null>(null);
+  const avatarRectRef = useRef<DOMRect | null>(null);
+
+  // detect low-end device heuristics
+  const isLowEndRef = useRef<boolean>(false);
   useEffect(() => {
-    const roAvatar = new ResizeObserver(() => {
+    const hw = (navigator as any).hardwareConcurrency || 4;
+    const deviceMemory = (navigator as any).deviceMemory || 4; // may be undefined
+    isLowEndRef.current = hw <= 2 || deviceMemory <= 1;
+  }, []);
+
+  // resize canvas when wrapper changes size
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  useEffect(() => {
+    const resize = () => {
+      const canvas = canvasRef.current;
+      const wrap = wrapRef.current;
+      if (!canvas || !wrap) return;
+      const rect = wrap.getBoundingClientRect();
+      const dpr = Math.max(1, window.devicePixelRatio || 1);
+      canvas.width = Math.round(rect.width * dpr);
+      canvas.height = Math.round(rect.height * dpr);
+      canvas.style.width = `${rect.width}px`;
+      canvas.style.height = `${rect.height}px`;
+      const ctx = canvas.getContext("2d");
+      if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      // cache wrapper rect for pointer coords
+      wrapRectRef.current = rect;
+      // cache avatar rect if present
       if (avatarRef.current)
         avatarRectRef.current = avatarRef.current.getBoundingClientRect();
-    });
-    const roWrap = new ResizeObserver(() => {
-      if (wrapRef.current)
-        wrapRectRef.current = wrapRef.current.getBoundingClientRect();
-    });
-
-    if (avatarRef.current) {
-      avatarRectRef.current = avatarRef.current.getBoundingClientRect();
-      roAvatar.observe(avatarRef.current);
-    }
-    if (wrapRef.current) {
-      wrapRectRef.current = wrapRef.current.getBoundingClientRect();
-      roWrap.observe(wrapRef.current);
-    }
-
-    const onWindowResize = () => {
-      if (avatarRef.current)
-        avatarRectRef.current = avatarRef.current.getBoundingClientRect();
-      if (wrapRef.current)
-        wrapRectRef.current = wrapRef.current.getBoundingClientRect();
     };
-    window.addEventListener("resize", onWindowResize);
 
+    resize();
+    const ro = new ResizeObserver(resize);
+    if (wrapRef.current) ro.observe(wrapRef.current);
+    if (avatarRef.current) ro.observe(avatarRef.current);
+
+    window.addEventListener("resize", resize);
     return () => {
-      roAvatar.disconnect();
-      roWrap.disconnect();
-      window.removeEventListener("resize", onWindowResize);
+      ro.disconnect();
+      window.removeEventListener("resize", resize);
     };
   }, []);
 
-  // Добавляет pop и удаляет через 900ms
-  const spawnPop = useCallback((x: number, y: number) => {
-    const id = Date.now() + Math.floor(Math.random() * 1000);
-    setPops((arr) => {
-      const next = [...arr.slice(-9), { id, x, y }]; // максимум 10
-      return next;
-    });
-    // удаляем через время
-    setTimeout(() => {
-      setPops((arr) => arr.filter((p) => p.id !== id));
-    }, 900);
+  useEffect(() => {
+    const tick = (ts: number) => {
+      const canvas = canvasRef.current;
+      if (!canvas) {
+        rafRef.current = requestAnimationFrame(tick);
+        return;
+      }
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        rafRef.current = requestAnimationFrame(tick);
+        return;
+      }
+
+      if (lastTsRef.current == null) lastTsRef.current = ts;
+      const dt = Math.min(40, ts - lastTsRef.current);
+      lastTsRef.current = ts;
+
+      const w = canvas.width;
+      const h = canvas.height;
+
+      ctx.clearRect(0, 0, w, h);
+
+      const arr = particlesRef.current;
+
+      for (let i = arr.length - 1; i >= 0; i--) {
+        const p = arr[i];
+        p.life -= dt;
+        if (p.life <= 0) {
+          arr.splice(i, 1);
+          continue;
+        }
+
+        p.vy += -0.03 * (dt / 16); // small upward "lift"
+        p.x += p.vx * (dt / 16);
+        p.y += p.vy * (dt / 16);
+
+        p.alpha = Math.max(0, p.life / p.ttl);
+
+        // draw simple circle (fast) — avoids image decoding overhead on weak devices
+        ctx.save();
+        ctx.globalAlpha = p.alpha;
+        ctx.beginPath();
+        ctx.fillStyle = "rgba(255,215,0,1)"; // gold-ish
+        ctx.arc(p.x, p.y, p.size / 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // limit particles for safety
+      const maxParticles = isLowEndRef.current ? 40 : 120;
+      if (arr.length > maxParticles) {
+        arr.splice(0, arr.length - maxParticles);
+      }
+
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    rafRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+      lastTsRef.current = null;
+    };
   }, []);
 
+  // lightweight spawn function (no setState)
+  const spawnParticles = useCallback((clientX: number, clientY: number) => {
+    const wrapRect =
+      wrapRectRef.current ?? wrapRef.current?.getBoundingClientRect();
+    if (!wrapRect) return;
+    const insideX = clientX - wrapRect.left;
+    const insideY = clientY - wrapRect.top;
+
+    const low = isLowEndRef.current;
+    const N = low ? 3 : 6; // fewer particles on low-end
+    const baseSize = Math.max(8, Math.min(28, wrapRect.width * 0.03));
+
+    const now = performance.now();
+    for (let i = 0; i < N; i++) {
+      const angle = (Math.random() - 0.5) * Math.PI * 0.7;
+      const speed = (0.6 + Math.random() * 1.1) * (low ? 0.7 : 1);
+      const p: Particle = {
+        x: insideX + (Math.random() - 0.5) * 8,
+        y: insideY + (Math.random() - 0.5) * 6,
+        vx: Math.cos(angle) * speed * (1 + Math.random() * 0.6),
+        vy: -Math.abs(Math.sin(angle) * speed * (0.6 + Math.random())),
+        life: 700 + Math.random() * 300,
+        ttl: 700 + Math.random() * 300,
+        size: baseSize * (0.6 + Math.random() * 0.9),
+        rot: (Math.random() - 0.5) * 0.8,
+        alpha: 1,
+      };
+      particlesRef.current.push(p);
+    }
+
+    // safety cap even if spawns frequent
+    const cap = low ? 60 : 200;
+    if (particlesRef.current.length > cap) {
+      particlesRef.current.splice(0, particlesRef.current.length - cap);
+    }
+  }, []);
+
+  // pointer handler — extremely light: update two states + call spawnParticles
+  const lastTapRef = useRef(0);
   const handlePointer = useCallback(
     (e: React.PointerEvent) => {
-      // throttle taps
       const now = performance.now();
-      if (now - lastTapRef.current < 120) return;
+      if (now - lastTapRef.current < 100) return; // quick throttle
       lastTapRef.current = now;
 
-      // обновляем счётчики
+      // local count state updates (batched)
       setCount((c) => c + 1);
       setValue((v) => Math.min(1000, v + STEP));
 
-      // вычисляем координаты для попа
-      // 1) если есть cached avatarRect — класть около центра аватара
-      // 2) иначе — использовать координаты касания внутри wrapper
+      // compute spawn location: prefer avatar center if available
+      const avatarRect = avatarRef.current?.getBoundingClientRect();
       const wrapRect =
-        wrapRectRef.current ?? wrapRef.current?.getBoundingClientRect() ?? null;
-      const avatarRect =
-        avatarRectRef.current ??
-        avatarRef.current?.getBoundingClientRect() ??
-        null;
-
+        wrapRectRef.current ?? wrapRef.current?.getBoundingClientRect();
       if (!wrapRect) return;
 
-      let x: number;
-      let y: number;
-
       if (avatarRect) {
-        // позиция чуть выше центра аватара (как было в оригинале)
-        x = avatarRect.left + avatarRect.width / 2 - wrapRect.left;
-        y = avatarRect.top + avatarRect.height * 0.25 - wrapRect.top; // чуть выше центра
+        // place above avatar center (like original)
+        const x = avatarRect.left + avatarRect.width / 2;
+        const y = avatarRect.top + avatarRect.height * 0.28;
+        spawnParticles(x, y);
       } else {
-        // если нет avatarRect, используем позицию указателя
-        x = e.clientX - wrapRect.left;
-        y = e.clientY - wrapRect.top;
+        spawnParticles(e.clientX, e.clientY);
       }
-
-      spawnPop(x, y);
     },
-    [spawnPop]
+    [spawnParticles]
   );
 
   return (
@@ -114,12 +213,16 @@ export default function Home() {
       className='relative w-full h-full py-2 space-y-4 flex-1 overflow-hidden'>
       <Progress value={value} height={12} max={1000} />
 
-      {/* слой с "+1" поверх всего */}
-      {/* <div className='pointer-events-none absolute inset-0 z-30'>
-        {pops.map((p) => (
-          <PlusOne key={p.id} x={p.x} y={p.y} />
-        ))}
-      </div> */}
+      {/* canvas overlay для частиц */}
+      <canvas
+        ref={canvasRef}
+        style={{
+          position: "absolute",
+          inset: 0,
+          zIndex: 30,
+          pointerEvents: "none", // не мешает кликам
+        }}
+      />
 
       {/* Тап-таргет по центру снизу */}
       <motion.button
@@ -148,25 +251,3 @@ export default function Home() {
     </div>
   );
 }
-
-/** Всплывающий "+1" в точке (x, y) — оптимизированный */
-// const PlusOne = memo(function PlusOne({ x, y }: { x: number; y: number }) {
-//   const jitterX = (Math.random() - 0.5) * 12;
-//   const jitterY = (Math.random() - 0.5) * 6;
-
-//   return (
-//     <motion.img
-//       initial={{ x: x + jitterX, y: y + jitterY, opacity: 0, scale: 0.9 }}
-//       animate={{ x: x + jitterX, y: y - 36, opacity: 1, scale: 1 }}
-//       exit={{ opacity: 0 }}
-//       src={coin}
-//       alt=''
-//       transition={{ duration: 0.8, ease: "easeOut" }}
-//       className='absolute -translate-x-1/2 -translate-y-1/2 select-none
-//                  w-[40px] h-[40px] font-extrabold text-white
-//                  transform-gpu will-change-transform
-//                  drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)]'
-//       style={{ left: x, top: y }}
-//     />
-//   );
-// });
