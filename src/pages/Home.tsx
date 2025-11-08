@@ -20,9 +20,20 @@ type Particle = {
 export default function Home() {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const avatarRef = useRef<HTMLImageElement | null>(null);
+  const [user, setUser] = useState(null);
 
   const [count, setCount] = useState(0);
   const [value, setValue] = useState(45);
+
+  useEffect(() => {
+    const WebApp = window?.Telegram?.WebApp;
+    WebApp?.ready();
+
+    const initData = WebApp?.initData ?? null;
+    const unsafe = WebApp?.initDataUnsafe ?? {};
+
+    if (unsafe.user) setUser(unsafe.user);
+  }, []);
 
   // particles are stored in ref to avoid React re-renders
   const particlesRef = useRef<Particle[]>([]);
@@ -212,6 +223,7 @@ export default function Home() {
       className='relative w-full h-full py-2 space-y-4 flex-1 overflow-hidden'>
       <Progress value={value} height={12} max={1000} />
 
+      <p>{user}</p>
       {/* canvas overlay для частиц */}
       <canvas
         ref={canvasRef}
