@@ -32,7 +32,7 @@ export default function Home() {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const WebApp = window?.Telegram?.WebApp;
+    const WebApp = (window as any)?.Telegram?.WebApp;
     if (!WebApp) {
       console.warn("Telegram WebApp not available");
       return;
@@ -40,24 +40,28 @@ export default function Home() {
 
     WebApp.ready();
 
-    // Если хочешь использовать initData в дальнейшем — получаем её:
-    // const initData = WebApp.initData ?? null;
     const unsafe = WebApp.initDataUnsafe ?? {};
+    console.log("WebApp.initDataUnsafe:", unsafe);
 
-    // На UI можно показывать предварительные данные (unsafe) — это только UX
+    // Попробуем корректно извлечь user
     let userObj: any = unsafe.user ?? null;
     if (typeof userObj === "string") {
       try {
         userObj = JSON.parse(userObj);
-      } catch {
-        // ignore
+      } catch (err) {
+        console.warn("Failed to parse unsafe.user:", err);
       }
     }
 
+    // Иногда user находится в unsafe.user or unsafe.user_info — лог покажет
+    if (!userObj && unsafe.user_info) {
+      userObj = unsafe.user_info;
+    }
+
+    console.log("Parsed userObj:", userObj);
     if (userObj) setUser(userObj);
-    // Если позже используешь initData — оставь её; если нет — подчисти:
-    // (если пока не используешь initData, можно закомментировать объявление выше)
   }, []);
+
   // particles are stored in ref to avoid React re-renders
   const particlesRef = useRef<Particle[]>([]);
   const rafRef = useRef<number | null>(null);
@@ -246,7 +250,19 @@ export default function Home() {
       className='relative w-full h-full py-2 space-y-4 flex-1 overflow-hidden'>
       <Progress value={value} height={12} max={1000} />
 
-      <p>{user?.first_name}</p>
+      <p className='text-white'>
+        {user ? (
+          <>
+            <strong>
+              {user.first_name ?? user.username ?? "Имя не найдено"}
+            </strong>
+            <br />
+            <small style={{ opacity: 0.8 }}>{JSON.stringify(user)}</small>
+          </>
+        ) : (
+          "Неавторизован"
+        )}
+      </p>
       {/* canvas overlay для частиц */}
       <canvas
         ref={canvasRef}
