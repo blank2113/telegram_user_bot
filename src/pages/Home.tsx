@@ -16,25 +16,48 @@ type Particle = {
   rot: number;
   alpha: number;
 };
+type User = {
+  id?: number;
+  first_name?: string;
+  username?: string;
+  [k: string]: any;
+};
 
 export default function Home() {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const avatarRef = useRef<HTMLImageElement | null>(null);
-  const [user, setUser] = useState(null);
 
   const [count, setCount] = useState(0);
   const [value, setValue] = useState(45);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const WebApp = window?.Telegram?.WebApp;
-    WebApp?.ready();
+    if (!WebApp) {
+      console.warn("Telegram WebApp not available");
+      return;
+    }
 
-    const initData = WebApp?.initData ?? null;
-    const unsafe = WebApp?.initDataUnsafe ?? {};
+    WebApp.ready();
 
-    if (unsafe.user) setUser(unsafe.user);
+    // Если хочешь использовать initData в дальнейшем — получаем её:
+    // const initData = WebApp.initData ?? null;
+    const unsafe = WebApp.initDataUnsafe ?? {};
+
+    // На UI можно показывать предварительные данные (unsafe) — это только UX
+    let userObj: any = unsafe.user ?? null;
+    if (typeof userObj === "string") {
+      try {
+        userObj = JSON.parse(userObj);
+      } catch {
+        // ignore
+      }
+    }
+
+    if (userObj) setUser(userObj);
+    // Если позже используешь initData — оставь её; если нет — подчисти:
+    // (если пока не используешь initData, можно закомментировать объявление выше)
   }, []);
-
   // particles are stored in ref to avoid React re-renders
   const particlesRef = useRef<Particle[]>([]);
   const rafRef = useRef<number | null>(null);
@@ -223,7 +246,7 @@ export default function Home() {
       className='relative w-full h-full py-2 space-y-4 flex-1 overflow-hidden'>
       <Progress value={value} height={12} max={1000} />
 
-      <p>{user}</p>
+      <p>{user?.first_name}</p>
       {/* canvas overlay для частиц */}
       <canvas
         ref={canvasRef}
