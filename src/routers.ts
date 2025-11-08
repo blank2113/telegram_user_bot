@@ -1,11 +1,11 @@
 import { createBrowserRouter } from "react-router";
 import MainLayout from "./layouts/MainLayout";
 
-import Home from "./pages/Home";
 import Games from "./pages/Games";
 import Airdrop from "./pages/Airdrop";
 import Friends from "./pages/Friends";
 import Profile from "./pages/Profile";
+import TelegramNoBackendAuth from "./pages/TelegramNoAuth";
 
 const router = createBrowserRouter([
   {
@@ -14,7 +14,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        Component: Home,
+        Component: TelegramNoBackendAuth,
       },
       {
         path: "/games",
