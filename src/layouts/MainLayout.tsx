@@ -33,8 +33,6 @@ const MainLayout = () => {
     }
   }, []);
 
-  console.log("User ID:", userId);
-
   return (
     <main
       className='min-h-screen w-screen h-svh flex flex-col items-center justify-center'
@@ -44,15 +42,12 @@ const MainLayout = () => {
       }}>
       <div className='absolute inset-0 bg-linear-to-b opacity-35 from-[#09152A] to-[#67C5F8]' />
 
-      {isMobile && userId ? (
-        <>
+      {isMobile ? (
+        <div className='h-full w-full flex flex-col items-center justify-center'>
           <Header />
           <Outlet />
           <Navigation />
-          {userId && (
-            <div className='text-white mt-4'>Ваш Telegram ID: {userId}</div>
-          )}
-        </>
+        </div>
       ) : (
         <UnAuthorizePage />
       )}
