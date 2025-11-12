@@ -101,13 +101,13 @@ const CoinFlip: FC = () => {
     scale: { duration: 1.4, ease: "easeInOut" },
   };
 
-  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    if (isFlipping) return;
-    e.preventDefault();
-    const factor = isMobile ? 0.45 : 0.7;
-    rotationRef.current += e.deltaY * factor;
-    setRotation(rotationRef.current);
-  };
+  // const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+  //   if (isFlipping) return;
+  //   e.preventDefault();
+  //   const factor = isMobile ? 0.45 : 0.7;
+  //   rotationRef.current += e.deltaY * factor;
+  //   setRotation(rotationRef.current);
+  // };
 
   // const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
   //   if (isFlipping) return;
