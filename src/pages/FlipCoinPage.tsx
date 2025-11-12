@@ -55,35 +55,35 @@ const CoinFlip: FC = () => {
 
     const result: CoinSide = Math.random() < 0.5 ? "heads" : "tails";
     const spins = Math.floor(Math.random() * 3) + (isMobile ? 3 : 4);
+
+    // targetRotation ровно 0 или 180 + полные обороты
     const extra = result === "heads" ? 0 : 180;
-    const targetRotation = rotationRef.current + spins * 360 + extra;
+    const targetRotation =
+      Math.round(rotationRef.current / 360) * 360 + spins * 360 + extra;
 
     rotationRef.current = targetRotation;
     setRotation(targetRotation);
 
     const totalMs = isMobile ? 1200 : 1400;
     setTimeout(() => {
+      setLastResult(result); // визуально совпадает
       const won = result === choice;
-      setLastResult(result);
-      if (won) {
-        setBalance((b) => b + stake);
-        setMessage(
-          `Вы выиграли ${stake} — выпало ${
-            result === "heads" ? "Орёл" : "Решка"
-          }`
-        );
-        haptic("light");
-      } else {
-        setBalance((b) => b - stake);
-        setMessage(
-          `Вы проиграли ${stake} — выпало ${
-            result === "heads" ? "Орёл" : "Решка"
-          }`
-        );
-        haptic("medium");
-      }
-      setTimeout(() => haptic("light"), 80);
+      setBalance((b) => (won ? b + stake : b - stake));
+      setMessage(
+        won
+          ? `Вы выиграли ${stake} — выпало ${
+              result === "heads" ? "Орёл" : "Решка"
+            }`
+          : `Вы проиграли ${stake} — выпало ${
+              result === "heads" ? "Орёл" : "Решка"
+            }`
+      );
+      haptic(won ? "light" : "medium");
       setIsFlipping(false);
+
+      // фиксируем угол после анимации
+      setRotation(extra);
+      rotationRef.current = extra;
     }, totalMs);
   };
 
@@ -188,55 +188,48 @@ const CoinFlip: FC = () => {
               />
 
               <motion.div
-                className={`w-full h-full rounded-full bg-gradient-to-b from-yellow-300 to-yellow-400 flex items-center justify-center text-4xl shadow-sm select-none ${
-                  isMobile ? "" : "shadow-md"
-                }`}
-                style={{ transformStyle: "preserve-3d" }}
-                onWheel={handleWheel}
-                // onTouchStart={handleTouchStart}
-                // onTouchMove={handleTouchMove}
-                // onTouchEnd={handleTouchEnd}
-                animate={
-                  isFlipping
-                    ? {
-                        rotateX: rotation,
-                        y: [0, isMobile ? -110 : -130, isMobile ? -22 : -26, 0],
-                        scale: [1, 1.03, 1.02, 1],
-                      }
-                    : { rotateX: rotation, y: 0, scale: 1 }
-                }
+                className='w-full h-full rounded-full flex items-center justify-center select-none relative'
+                style={{ transformStyle: "preserve-3d", perspective: 1000 }}
+                animate={{
+                  rotateX: rotation,
+                  y: isFlipping
+                    ? isMobile
+                      ? [-110, -22, 0]
+                      : [-130, -26, 0]
+                    : 0,
+                  scale: isFlipping ? [1, 1.03, 1.02, 1] : 1,
+                }}
                 transition={coinTransition}
                 onClick={() => {
                   if (!isFlipping)
                     flipCoin(Math.random() < 0.5 ? "heads" : "tails");
-                }}
-                role='button'
-                aria-label='Монета — нажмите для броска, свайпом крутите'>
+                }}>
+                {/* Лицевая сторона */}
                 <div
+                  className='absolute inset-0'
                   style={{
                     backfaceVisibility: "hidden",
-                    transform: "rotateX(0deg) translateZ(2px)",
-                  }}
-                  className='absolute inset-0 flex flex-col items-center justify-center'>
+                    transform: "rotateX(0deg)",
+                  }}>
                   <img
                     src={front}
-                    alt=''
-                    className='w-full h-full object-cover'
+                    alt='front'
+                    className='w-full h-full object-cover rounded-full'
                   />
                 </div>
+
+                {/* Обратная сторона */}
                 <div
+                  className='absolute inset-0'
                   style={{
                     backfaceVisibility: "hidden",
-                    transform: "rotateX(180deg) translateZ(2px)",
-                  }}
-                  className='absolute inset-0 flex flex-col items-center justify-center'>
-                  <div className=''>
-                    <img
-                      src={back}
-                      alt=''
-                      className='w-full h-full object-cover'
-                    />
-                  </div>
+                    transform: "rotateX(180deg)",
+                  }}>
+                  <img
+                    src={back}
+                    alt='back'
+                    className='w-full h-full object-cover rounded-full'
+                  />
                 </div>
               </motion.div>
             </div>
