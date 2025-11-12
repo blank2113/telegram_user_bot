@@ -5,7 +5,8 @@ import Games from "./pages/Games";
 import Airdrop from "./pages/Airdrop";
 import Friends from "./pages/Friends";
 import Profile from "./pages/Profile";
-import TelegramNoBackendAuth from "./pages/TelegramNoAuth";
+
+import CoinFlip from "./pages/FlipCoinPage";
 
 const router = createBrowserRouter([
   {
@@ -14,7 +15,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        Component: TelegramNoBackendAuth,
+        Component: CoinFlip,
       },
       {
         path: "/games",

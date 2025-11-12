@@ -1,303 +1,113 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
-import Progress from "../components/progress/Progress";
-import touchAv from "../assets/icons/touchAv.svg";
+import image from "../assets/images/img1.png";
+import CustomBackground from "../components/ui/CustomBackground";
+import CustomButton from "../components/ui/CustomButton";
+import light from "../assets/images/light.png";
+import coin from "../assets/images/hcoin.png";
+import CustomPopup from "../components/ui/CustomPopup";
+import { useEffect, useState } from "react";
+import StatusMenu from "../components/home/StatusMenu";
+import useStatusPaymentStore from "../store/statusPayment";
+import StatusPayment from "../components/home/StatusPayment";
+import PaymentStatusAlert from "../components/home/PaymentStatusAlert";
+import { socket } from "../utils/socket";
 
-const STEP = 1;
-
-type Particle = {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  life: number;
-  ttl: number;
-  size: number;
-  rot: number;
-  alpha: number;
-};
-type User = {
-  id?: number;
-  first_name?: string;
-  username?: string;
-  [k: string]: any;
-};
-
-export default function Home() {
-  const wrapRef = useRef<HTMLDivElement | null>(null);
-  const avatarRef = useRef<HTMLImageElement | null>(null);
-
-  const [count, setCount] = useState(0);
-  const [value, setValue] = useState(45);
-  const [user, setUser] = useState<User | null>(null);
+const Home = () => {
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const {
+    open,
+    setOpen,
+    paymentStatusOpen,
+    setPaymentStatusOpen,
+    setPaymentStatus,
+  } = useStatusPaymentStore((state) => state);
 
   useEffect(() => {
-    const WebApp = (window as any)?.Telegram?.WebApp;
-    if (!WebApp) {
-      console.warn("Telegram WebApp not available");
-      return;
-    }
+    const anyHandler = (event: string, ...args: any[]) => {
+      const payload = args[0];
+      console.log("[socket any] event:", event, payload);
 
-    WebApp.ready();
-
-    const unsafe = WebApp.initDataUnsafe ?? {};
-    console.log("WebApp.initDataUnsafe:", unsafe);
-
-    // Попробуем корректно извлечь user
-    let userObj: any = unsafe.user ?? null;
-    if (typeof userObj === "string") {
-      try {
-        userObj = JSON.parse(userObj);
-      } catch (err) {
-        console.warn("Failed to parse unsafe.user:", err);
-      }
-    }
-
-    // Иногда user находится в unsafe.user or unsafe.user_info — лог покажет
-    if (!userObj && unsafe.user_info) {
-      userObj = unsafe.user_info;
-    }
-
-    console.log("Parsed userObj:", userObj);
-    if (userObj) setUser(userObj);
-  }, []);
-
-  // particles are stored in ref to avoid React re-renders
-  const particlesRef = useRef<Particle[]>([]);
-  const rafRef = useRef<number | null>(null);
-  const lastTsRef = useRef<number | null>(null);
-
-  // cached rects
-  const wrapRectRef = useRef<DOMRect | null>(null);
-  const avatarRectRef = useRef<DOMRect | null>(null);
-
-  // detect low-end device heuristics
-  const isLowEndRef = useRef<boolean>(false);
-  useEffect(() => {
-    const hw = (navigator as any).hardwareConcurrency || 4;
-    const deviceMemory = (navigator as any).deviceMemory || 4; // may be undefined
-    isLowEndRef.current = hw <= 2 || deviceMemory <= 1;
-  }, []);
-
-  // resize canvas when wrapper changes size
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  useEffect(() => {
-    const resize = () => {
-      const canvas = canvasRef.current;
-      const wrap = wrapRef.current;
-      if (!canvas || !wrap) return;
-      const rect = wrap.getBoundingClientRect();
-      const dpr = Math.max(1, window.devicePixelRatio || 1);
-      canvas.width = Math.round(rect.width * dpr);
-      canvas.height = Math.round(rect.height * dpr);
-      canvas.style.width = `${rect.width}px`;
-      canvas.style.height = `${rect.height}px`;
-      const ctx = canvas.getContext("2d");
-      if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      // cache wrapper rect for pointer coords
-      wrapRectRef.current = rect;
-      // cache avatar rect if present
-      if (avatarRef.current)
-        avatarRectRef.current = avatarRef.current.getBoundingClientRect();
-    };
-
-    resize();
-    const ro = new ResizeObserver(resize);
-    if (wrapRef.current) ro.observe(wrapRef.current);
-    if (avatarRef.current) ro.observe(avatarRef.current);
-
-    window.addEventListener("resize", resize);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", resize);
-    };
-  }, []);
-
-  useEffect(() => {
-    const tick = (ts: number) => {
-      const canvas = canvasRef.current;
-      if (!canvas) {
-        rafRef.current = requestAnimationFrame(tick);
-        return;
-      }
-      const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        rafRef.current = requestAnimationFrame(tick);
-        return;
-      }
-
-      if (lastTsRef.current == null) lastTsRef.current = ts;
-      const dt = Math.min(40, ts - lastTsRef.current);
-      lastTsRef.current = ts;
-
-      const w = canvas.width;
-      const h = canvas.height;
-
-      ctx.clearRect(0, 0, w, h);
-
-      const arr = particlesRef.current;
-
-      for (let i = arr.length - 1; i >= 0; i--) {
-        const p = arr[i];
-        p.life -= dt;
-        if (p.life <= 0) {
-          arr.splice(i, 1);
-          continue;
+      // пример обработки конкретного события
+      if (event === "withdraw_update") {
+        const status = payload?.status;
+        if (status === "APPROVED") {
+          setPaymentStatus("success");
+        } else if (status === "REJECTED") {
+          setPaymentStatus("404");
+        } else {
+          setPaymentStatus(""); // неизвестный статус
         }
-
-        p.vy += -0.03 * (dt / 16); // small upward "lift"
-        p.x += p.vx * (dt / 16);
-        p.y += p.vy * (dt / 16);
-
-        p.alpha = Math.max(0, p.life / p.ttl);
-
-        // draw simple circle (fast) — avoids image decoding overhead on weak devices
-        ctx.save();
-        ctx.globalAlpha = p.alpha;
-        ctx.beginPath();
-        ctx.fillStyle = "rgba(255,215,0,1)"; // gold-ish
-        ctx.arc(p.x, p.y, p.size / 2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
+        setPaymentStatusOpen(true); // показываем алерт
       }
 
-      // limit particles for safety
-      const maxParticles = isLowEndRef.current ? 40 : 120;
-      if (arr.length > maxParticles) {
-        arr.splice(0, arr.length - maxParticles);
-      }
-
-      rafRef.current = requestAnimationFrame(tick);
+      // для других событий можно оставить лог или сохранить raw
     };
 
-    rafRef.current = requestAnimationFrame(tick);
+    socket.onAny(anyHandler);
     return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      rafRef.current = null;
-      lastTsRef.current = null;
+      socket.offAny(anyHandler);
     };
-  }, []);
-
-  // lightweight spawn function (no setState)
-  const spawnParticles = useCallback((clientX: number, clientY: number) => {
-    const wrapRect =
-      wrapRectRef.current ?? wrapRef.current?.getBoundingClientRect();
-    if (!wrapRect) return;
-    const insideX = clientX - wrapRect.left;
-    const insideY = clientY - wrapRect.top;
-
-    const low = isLowEndRef.current;
-    const N = low ? 3 : 6; // fewer particles on low-end
-    const baseSize = Math.max(8, Math.min(28, wrapRect.width * 0.03));
-
-    for (let i = 0; i < N; i++) {
-      const angle = (Math.random() - 0.5) * Math.PI * 0.7;
-      const speed = (0.6 + Math.random() * 1.1) * (low ? 0.7 : 1);
-      const p: Particle = {
-        x: insideX + (Math.random() - 0.5) * 8,
-        y: insideY + (Math.random() - 0.5) * 6,
-        vx: Math.cos(angle) * speed * (1 + Math.random() * 0.6),
-        vy: -Math.abs(Math.sin(angle) * speed * (0.6 + Math.random())),
-        life: 700 + Math.random() * 300,
-        ttl: 700 + Math.random() * 300,
-        size: baseSize * (0.6 + Math.random() * 0.9),
-        rot: (Math.random() - 0.5) * 0.8,
-        alpha: 1,
-      };
-      particlesRef.current.push(p);
-    }
-
-    // safety cap even if spawns frequent
-    const cap = low ? 60 : 200;
-    if (particlesRef.current.length > cap) {
-      particlesRef.current.splice(0, particlesRef.current.length - cap);
-    }
-  }, []);
-
-  // pointer handler — extremely light: update two states + call spawnParticles
-  const lastTapRef = useRef(0);
-  const handlePointer = useCallback(
-    (e: React.PointerEvent) => {
-      const now = performance.now();
-      if (now - lastTapRef.current < 100) return; // quick throttle
-      lastTapRef.current = now;
-
-      // local count state updates (batched)
-      setCount((c) => c + 1);
-      setValue((v) => Math.min(1000, v + STEP));
-
-      // compute spawn location: prefer avatar center if available
-      const avatarRect = avatarRef.current?.getBoundingClientRect();
-      const wrapRect =
-        wrapRectRef.current ?? wrapRef.current?.getBoundingClientRect();
-      if (!wrapRect) return;
-
-      if (avatarRect) {
-        // place above avatar center (like original)
-        const x = avatarRect.left + avatarRect.width / 2;
-        const y = avatarRect.top + avatarRect.height * 0.28;
-        spawnParticles(x, y);
-      } else {
-        spawnParticles(e.clientX, e.clientY);
-      }
-    },
-    [spawnParticles]
-  );
+  }, [setPaymentStatus, setPaymentStatusOpen]);
 
   return (
-    <div
-      ref={wrapRef}
-      className='relative w-full h-full py-2 space-y-4 flex-1 overflow-hidden'>
-      <Progress value={value} height={12} max={1000} />
-
-      <p className='text-white'>
-        {user ? (
-          <>
-            <strong>
-              {user.first_name ?? user.username ?? "Имя не найдено"}
-            </strong>
-            <br />
-            <small style={{ opacity: 0.8 }}>{JSON.stringify(user)}</small>
-          </>
-        ) : (
-          "Неавторизован"
-        )}
-      </p>
-      {/* canvas overlay для частиц */}
-      <canvas
-        ref={canvasRef}
-        style={{
-          position: "absolute",
-          inset: 0,
-          zIndex: 30,
-          pointerEvents: "none", // не мешает кликам
-        }}
+    <div className='px-3 pt-10 pb-40 relative z-1 flex flex-col items-center  w-full gap-4 overflow-y-scroll h-svh'>
+      <img src={image} alt='' className='w-[200] h-[200] object-contain' />
+      <CustomButton
+        title='Pul chiqarish'
+        onClick={() => console.log(1)}
+        className='absolute top-4 right-3'
       />
+      <h1 className='text-center text-[35px] md:text-[48px] lg:text-[64px] text-white font-semibold leading-tight'>
+        Pul kiritish/ yechib olish
+      </h1>
 
-      {/* Тап-таргет по центру снизу */}
-      <motion.button
-        type='button'
-        onPointerDown={handlePointer}
-        className='absolute left-1/2 bottom-[100px] -translate-x-1/2 focus:outline-none'
-        whileTap={{ scale: 0.95 }}
-        aria-label='Tap to increase'>
-        <span className='absolute inset-0 -z-10 blur-xl rounded-full bg-cyan-300/30' />
-        <motion.img
-          ref={avatarRef}
-          src={touchAv}
-          alt=''
-          className='w-auto h-[clamp(320px,62svh,520px)] max-w-[90vw] select-none pointer-events-none'
-          initial={{ scale: 0.98, rotate: -1, opacity: 0.95 }}
-          animate={{ scale: 1, rotate: 0, opacity: 1 }}
-          transition={{ duration: 0.28, ease: "easeOut" }}
-          draggable={false}
-          decoding='async'
-        />
-      </motion.button>
-
-      <div className='absolute left-4 top-[72px] text-white/90 text-sm font-semibold z-10'>
-        Taps: {count}
-      </div>
+      <CustomBackground
+        title='Status sotib olish'
+        img={
+          <img
+            src={light}
+            alt=''
+            className='absolute -top-4 left-3 w-[90px] h-[90px]'
+          />
+        }
+        className='absolute left-4 bottom-4'
+        btn={
+          <CustomButton
+            title='Davom etish'
+            onClick={() => setModalOpen(true)}
+          />
+        }
+      />
+      <CustomBackground
+        title='Limon sotib olish'
+        img={
+          <img
+            src={coin}
+            alt=''
+            className='absolute w-[90px] h-[90px] -top-3 left-1'
+          />
+        }
+        className='absolute left-4 bottom-5'
+        btn={
+          <CustomButton title='Davom etish' onClick={() => console.log(1)} />
+        }
+      />
+      <CustomPopup
+        open={modalOpen}
+        setOpen={setModalOpen}
+        component={<StatusMenu setClose={setModalOpen} />}
+      />
+      <CustomPopup
+        open={open}
+        setOpen={setOpen}
+        component={<StatusPayment />}
+      />
+      <CustomPopup
+        open={paymentStatusOpen}
+        setOpen={setPaymentStatusOpen}
+        component={<PaymentStatusAlert />}
+      />
     </div>
   );
-}
+};
+
+export default Home;
