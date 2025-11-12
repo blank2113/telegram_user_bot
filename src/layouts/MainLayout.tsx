@@ -7,7 +7,7 @@ import UnAuthorizePage from "../pages/UnAuthorizePage";
 
 const MainLayout = () => {
   const [isMobile, setIsMobile] = useState<boolean>(false);
-  const [userId, setUserId] = useState<number | null>(null);
+  // const [userId, setUserId] = useState<number | null>(null);
 
   useEffect(() => {
     const checkScreen = () => setIsMobile(window.innerWidth < 768);
@@ -16,22 +16,22 @@ const MainLayout = () => {
     return () => window.removeEventListener("resize", checkScreen);
   }, []);
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const startParam = urlParams.get("start");
+  // useEffect(() => {
+  //   const urlParams = new URLSearchParams(window.location.search);
+  //   const startParam = urlParams.get("start");
 
-    if (startParam) {
-      try {
-        // в браузере вместо Buffer используем atob
-        const decoded = JSON.parse(atob(startParam));
-        if (decoded.user_id) {
-          setUserId(Number(decoded.user_id));
-        }
-      } catch (err) {
-        console.error("Failed to parse start param:", err);
-      }
-    }
-  }, []);
+  //   if (startParam) {
+  //     try {
+  //       // в браузере вместо Buffer используем atob
+  //       const decoded = JSON.parse(atob(startParam));
+  //       if (decoded.user_id) {
+  //         setUserId(Number(decoded.user_id));
+  //       }
+  //     } catch (err) {
+  //       console.error("Failed to parse start param:", err);
+  //     }
+  //   }
+  // }, []);
 
   return (
     <main
