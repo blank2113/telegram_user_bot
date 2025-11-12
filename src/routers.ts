@@ -1,12 +1,11 @@
 import { createBrowserRouter } from "react-router";
 import MainLayout from "./layouts/MainLayout";
-
-import Games from "./pages/Games";
 import Airdrop from "./pages/Airdrop";
 import Friends from "./pages/Friends";
 import Profile from "./pages/Profile";
 
 import CoinFlip from "./pages/FlipCoinPage";
+import Home from "./pages/Home";
 
 const router = createBrowserRouter([
   {
@@ -15,11 +14,11 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        Component: CoinFlip,
+        Component: Home,
       },
       {
         path: "/games",
-        Component: Games,
+        Component: CoinFlip,
       },
       {
         path: "/airdrop",
