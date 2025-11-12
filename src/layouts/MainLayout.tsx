@@ -25,7 +25,7 @@ const MainLayout = () => {
         try {
           // В браузере используем atob вместо Buffer
           const decoded = JSON.parse(atob(startParam));
-          setUserId(decoded.user_id);
+          setUserId(decoded.userId);
         } catch (err) {
           console.error("Failed to parse start param:", err);
         }
