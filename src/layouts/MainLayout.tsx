@@ -18,17 +18,16 @@ const MainLayout = () => {
 
   useEffect(() => {
     if (window.Telegram?.WebApp) {
-      const urlParams = new URLSearchParams(window.location.search);
-      const startParam = urlParams.get("start");
+      const WebApp = window.Telegram.WebApp;
+      WebApp.ready();
 
-      if (startParam) {
-        try {
-          // В браузере используем atob вместо Buffer
-          const decoded = JSON.parse(atob(startParam));
-          setUserId(decoded.userId);
-        } catch (err) {
-          console.error("Failed to parse start param:", err);
-        }
+      const user = WebApp.initDataUnsafe?.user;
+
+      if (user && typeof user !== "string") {
+        // Теперь TypeScript понимает, что user — объект TelegramUser
+        setUserId(user.id);
+      } else {
+        console.warn("User not found or is string:", user);
       }
     }
   }, []);
