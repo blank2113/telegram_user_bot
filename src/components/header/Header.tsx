@@ -13,7 +13,7 @@ const Header = () => {
         <p className='text-white font-semibold'>{formatNumber(900)}</p>
       </div>
       <div className='flex items-center justify-center gap-3'>
-        <img src={avatar} alt='' className='w-[40px] h-[40px]' />
+        <img src={avatar} alt='' className='w-10 h-10' />
         <div className='flex flex-col gap-0.5 items-start justify-center'>
           <p
             className='text-white font-semibold max-w-[110px] truncate'
@@ -25,7 +25,7 @@ const Header = () => {
             <span className='text-[#FFFFFF] text-[10px] font-semibold'>
               LVL
             </span>
-            <span className='bg-[#24E6F3] px-1.5 rounded-[4px] text-[12px]'>
+            <span className='bg-[#24E6F3] px-1.5 rounded-sm text-[12px]'>
               4
             </span>
           </p>

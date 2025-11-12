@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, type FC } from "react";
+import { useState, useRef, useEffect, type FC } from "react";
 import { motion, type Transition } from "framer-motion";
 import back from "../assets/images/back.png";
 import front from "../assets/images/front.png";
@@ -11,10 +11,8 @@ const CoinFlip: FC = () => {
   const [message, setMessage] = useState<string>("");
   const [isFlipping, setIsFlipping] = useState<boolean>(false);
   const [lastResult, setLastResult] = useState<CoinSide | null>(null);
-
   const [rotation, setRotation] = useState<number>(0);
   const rotationRef = useRef<number>(0);
-  // const touchStartY = useRef<number | null>(null);
 
   const [isTelegramWebApp, setIsTelegramWebApp] = useState<boolean>(false);
   useEffect(() => {
@@ -55,8 +53,6 @@ const CoinFlip: FC = () => {
 
     const result: CoinSide = Math.random() < 0.5 ? "heads" : "tails";
     const spins = Math.floor(Math.random() * 3) + (isMobile ? 3 : 4);
-
-    // targetRotation ровно 0 или 180 + полные обороты
     const extra = result === "heads" ? 0 : 180;
     const targetRotation =
       Math.round(rotationRef.current / 360) * 360 + spins * 360 + extra;
@@ -64,9 +60,10 @@ const CoinFlip: FC = () => {
     rotationRef.current = targetRotation;
     setRotation(targetRotation);
 
+    // результат и баланс будем обновлять после таймаута
     const totalMs = isMobile ? 1200 : 1400;
     setTimeout(() => {
-      setLastResult(result); // визуально совпадает
+      setLastResult(result);
       const won = result === choice;
       setBalance((b) => (won ? b + stake : b - stake));
       setMessage(
@@ -79,11 +76,11 @@ const CoinFlip: FC = () => {
             }`
       );
       haptic(won ? "light" : "medium");
+
       setIsFlipping(false);
 
-      // фиксируем угол после анимации
-      setRotation(extra);
-      rotationRef.current = extra;
+      // больше не трогаем setRotation
+      // rotationRef.current = extra; <- оставляем только ref, если нужно
     }, totalMs);
   };
 
@@ -101,35 +98,9 @@ const CoinFlip: FC = () => {
     scale: { duration: 1.4, ease: "easeInOut" },
   };
 
-  // const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-  //   if (isFlipping) return;
-  //   e.preventDefault();
-  //   const factor = isMobile ? 0.45 : 0.7;
-  //   rotationRef.current += e.deltaY * factor;
-  //   setRotation(rotationRef.current);
-  // };
-
-  // const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-  //   if (isFlipping) return;
-  //   touchStartY.current = e.touches?.[0]?.clientY ?? null;
-  // };
-  // const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-  //   if (isFlipping) return;
-  //   if (touchStartY.current == null) return;
-  //   const y = e.touches?.[0]?.clientY ?? 0;
-  //   const dy = touchStartY.current - y;
-  //   const factor = isMobile ? 0.9 : 1.1;
-  //   rotationRef.current += dy * factor;
-  //   setRotation(rotationRef.current);
-  //   touchStartY.current = y;
-  // };
-  // const handleTouchEnd = () => {
-  //   touchStartY.current = null;
-  // };
-
   return (
     <div
-      className=' flex items-center justify-center bg-transparent pb-50 h-full overflow-y-scroll'
+      className='flex items-center justify-center bg-transparent pb-16 pt-8 h-full overflow-y-scroll'
       style={{
         paddingTop: "0px",
         paddingBottom: "60px",
@@ -151,7 +122,7 @@ const CoinFlip: FC = () => {
         </div>
 
         <div
-          className='relative bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-800 rounded-xl pt-16 pb-4 px-4'
+          className='relative bg-linear-to-br from-slate-900 via-indigo-900 to-purple-800 rounded-xl pt-16 pb-4 px-4'
           style={{ boxShadow: "0 6px 18px rgba(16,24,40,0.06)" }}>
           <div
             className={`absolute left-1/2 transform -translate-x-1/2 ${"-top-16"} z-30`}>
@@ -200,9 +171,8 @@ const CoinFlip: FC = () => {
                   scale: isFlipping ? [1, 1.03, 1.02, 1] : 1,
                 }}
                 transition={coinTransition}
-                onClick={() => {
-                  if (!isFlipping)
-                    flipCoin(Math.random() < 0.5 ? "heads" : "tails");
+                onAnimationComplete={() => {
+                  if (isFlipping) setIsFlipping(false);
                 }}>
                 {/* Лицевая сторона */}
                 <div
@@ -268,7 +238,7 @@ const CoinFlip: FC = () => {
               </button>
             </div>
 
-            <div className='mt-2 text-sm text-white min-h-[44px]'>
+            <div className='mt-2 text-sm text-white min-h-11'>
               {message || "—"}
             </div>
             <div className='text-xs text-white'>

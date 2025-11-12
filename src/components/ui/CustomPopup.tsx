@@ -75,7 +75,7 @@ const CustomPopup = ({ open = true, setOpen, component }: Types) => {
     <AnimatePresence>
       {open && (
         <motion.div
-          className='fixed inset-0 z-[9999] flex items-center justify-center'
+          className='fixed inset-0 z-9999 flex items-center justify-center'
           onMouseDown={() => setOpen(false)}
           aria-modal='true'
           role='dialog'
@@ -83,7 +83,7 @@ const CustomPopup = ({ open = true, setOpen, component }: Types) => {
           animate='visible'
           exit='hidden'>
           <motion.div
-            className='absolute inset-0 bg-[#00000066] backdrop-blur-[8px]'
+            className='absolute inset-0 bg-[#00000066] backdrop-blur-sm'
             variants={overlayVariant}
             initial='hidden'
             animate='visible'
@@ -95,7 +95,7 @@ const CustomPopup = ({ open = true, setOpen, component }: Types) => {
 
           <motion.div
             ref={contentRef}
-            className='relative z-50 bg-[#FFFFFF55] p-4 shadow-2xl max-w-[90vw] w-full rounded-[12px]'
+            className='relative z-50 bg-[#FFFFFF55] p-4 shadow-2xl max-w-[90vw] w-full rounded-xl'
             variants={modalVariant}
             initial='hidden'
             animate='visible'

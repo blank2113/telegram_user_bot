@@ -187,7 +187,7 @@ const StatusPayment = () => {
           </div>
           <button
             type='button'
-            className='bg-[linear-gradient(90deg,#9CFF8F_0%,#92FDB9_50.5%,#83FEE4_100%)] p-2 rounded-[12px] hover:scale-105 active:scale-105 transition-all outline-none'
+            className='bg-[linear-gradient(90deg,#9CFF8F_0%,#92FDB9_50.5%,#83FEE4_100%)] p-2 rounded-xl hover:scale-105 active:scale-105 transition-all outline-none'
             onClick={() => {
               // copy raw digits to clipboard formatted or raw
               const toCopy = formattedCard;
@@ -233,7 +233,7 @@ const StatusPayment = () => {
             )}
           </div>
 
-          <label className='bg-[linear-gradient(90deg,#9CFF8F_0%,#92FDB9_50.5%,#83FEE4_100%)] p-2 rounded-[12px] hover:scale-105 active:scale-105 transition-all outline-none cursor-pointer'>
+          <label className='bg-[linear-gradient(90deg,#9CFF8F_0%,#92FDB9_50.5%,#83FEE4_100%)] p-2 rounded-xl hover:scale-105 active:scale-105 transition-all outline-none cursor-pointer'>
             <FaPaperclip className='text-[25px]' />
             <input
               type='file'

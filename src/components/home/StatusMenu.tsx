@@ -62,7 +62,7 @@ const StatusMenu = ({ setClose }: Props) => {
               "bg-[linear-gradient(90deg,rgba(14,112,191,0.25)_0%,rgba(50,245,240,0.12)_100%)] " +
               "border border-[#24E6F3CC] backdrop-blur-md py-3 px-3 rounded-2xl w-full flex items-center justify-between gap-3"
             }>
-            <div className='flex-shrink-0'>
+            <div className='shrink-0'>
               <img
                 src={el.img}
                 alt={el.title}
@@ -78,7 +78,7 @@ const StatusMenu = ({ setClose }: Props) => {
             </div>
 
             {/* кнопка */}
-            <div className='flex-shrink-0'>
+            <div className='shrink-0'>
               <CustomButton
                 title='Sotib olish'
                 onClick={() => {

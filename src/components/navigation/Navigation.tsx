@@ -21,7 +21,7 @@ const Navigation = () => {
   return (
     <div className='absolute bottom-6 w-full px-3 z-10'>
       <div
-        className=' left-0 right-0 min-h-12 bg-linear-to-r from-[#7CCFE6] to-[#60C3E1] rounded-[12px] p-2 
+        className=' left-0 right-0 min-h-12 bg-linear-to-r from-[#7CCFE6] to-[#60C3E1] rounded-xl p-2 
       flex items-center justify-between w-full shadow-2xl
       '>
         {links.map((el) => (
@@ -30,8 +30,8 @@ const Navigation = () => {
             key={el.id}
             className={
               pathname == el.link
-                ? "flex flex-col items-center justify-center gap-2 bg-[#40B5DB]  p-2 rounded-[12px]"
-                : "flex flex-col items-center justify-center gap-2  p-2 rounded-[12px]"
+                ? "flex flex-col items-center justify-center gap-2 bg-[#40B5DB]  p-2 rounded-xl"
+                : "flex flex-col items-center justify-center gap-2  p-2 rounded-xl"
             }>
             <motion.img
               initial={{ scale: 1 }}
