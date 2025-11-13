@@ -50,7 +50,7 @@ const Home = () => {
       <CustomButton
         title='Pul chiqarish'
         onClick={() => console.log(1)}
-        className='absolute top-4 right-3'
+        className='absolute top-4 right-3 text-sm font-medium'
       />
       <h1 className='text-center text-[30px]  text-white font-semibold leading-tight'>
         Pul kiritish/ yechib olish
@@ -63,6 +63,7 @@ const Home = () => {
             <CustomButton
               title='Davom etish'
               onClick={() => setModalOpen(true)}
+              className='text-sm font-medium'
             />
           }
         />
@@ -71,7 +72,11 @@ const Home = () => {
           img={<AnimatedCoin className='absolute -top-2 left-2' />}
           className='absolute left-2 bottom-1'
           btn={
-            <CustomButton title='Davom etish' onClick={() => console.log(1)} />
+            <CustomButton
+              title='Davom etish'
+              onClick={() => console.log(1)}
+              className='text-sm font-medium'
+            />
           }
         />
       </div>
