@@ -12,9 +12,7 @@ const TelegramLinkPopup = ({
   botUsername = "test_user_appp_bot",
   inviteText = "Присоединяйся к этому боту!",
 }: Props) => {
-  const invitePath = `/invite/${botUsername}.html`;
   const inviteUrl = `${window.location.origin}/invite/${botUsername}`;
-  const botUrl = `https://t.me/${botUsername}`;
   const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(
     inviteUrl
   )}&text=${encodeURIComponent(inviteText)}`;
