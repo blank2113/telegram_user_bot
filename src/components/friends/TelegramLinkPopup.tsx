@@ -13,6 +13,7 @@ const TelegramLinkPopup = ({
   botUsername = "test_user_appp_bot",
   inviteText = "Присоединяйся к этому боту!",
 }: Props) => {
+  const botUrl = `https://t.me/${botUsername}`;
   const invitePath = `/invite/${botUsername}.html`;
   const inviteUrl = `${window.location.origin}${invitePath}`;
   const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(
@@ -39,14 +40,14 @@ const TelegramLinkPopup = ({
 
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(shareUrl);
+      await navigator.clipboard.writeText(botUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 1600);
     } catch (err) {
       // fallback: prompt
       // eslint-disable-next-line no-alert
       alert(
-        "Не удалось автоматически скопировать. Скопируйте вручную: " + shareUrl
+        "Не удалось автоматически скопировать. Скопируйте вручную: " + botUrl
       );
     }
   };
@@ -76,7 +77,7 @@ const TelegramLinkPopup = ({
       <div className='w-full'>
         <div className='bg-[#071240B2] w-full p-3 rounded-3xl text-gray-200 text-center break-words select-all'>
           <a
-            href={shareUrl}
+            href={botUrl}
             onClick={(e) => {
               // при клике на саму ссылку — открываем правильно (и внутри WebApp тоже)
               e.preventDefault();
@@ -88,12 +89,12 @@ const TelegramLinkPopup = ({
                   return;
                 }
               } catch {}
-              window.open(shareUrl, "_blank", "noopener,noreferrer");
+              window.open(botUrl, "_blank", "noopener,noreferrer");
             }}
             className='text-cyan-100 underline'
             target='_blank'
             rel='noopener noreferrer'>
-            {shareUrl}
+            {botUrl}
           </a>
         </div>
       </div>
