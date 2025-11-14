@@ -13,10 +13,8 @@ const TelegramLinkPopup = ({
   inviteText = "Присоединяйся к этому боту!",
 }: Props) => {
   const botUrl = `https://t.me/${botUsername}`;
-  const invitePath = `/invite/${botUsername}.html`;
-  const inviteUrl = `${window.location.origin}${invitePath}`;
   const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(
-    inviteUrl
+    botUrl
   )}&text=${encodeURIComponent(inviteText)}`;
 
   // const [copied, setCopied] = useState(false);
