@@ -1,8 +1,8 @@
+import { useState } from "react";
 import { IoMdCloseCircle } from "react-icons/io";
 
 type Props = {
   onClose?: () => void;
-  // если не указан — используем твой бот
   botUsername?: string;
   inviteText?: string;
 };
@@ -17,37 +17,33 @@ const TelegramLinkPopup = ({
     botUrl
   )}&text=${encodeURIComponent(inviteText)}`;
 
-  // const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const openTelegramShare = (e?: React.MouseEvent) => {
     e?.preventDefault();
     try {
-      // если внутри Telegram WebApp — открываем через WebApp.openLink
+      // Если внутри Telegram WebApp — используем openLink
       // @ts-ignore
       if (window?.Telegram?.WebApp?.openLink) {
         // @ts-ignore
         window.Telegram.WebApp.openLink(shareUrl);
         return;
       }
-    } catch {
-      /* fallback ниже */
-    }
+    } catch {}
     window.open(shareUrl, "_blank", "noopener,noreferrer");
   };
 
-  // const copyToClipboard = async () => {
-  //   try {
-  //     await navigator.clipboard.writeText(botUrl);
-  //     setCopied(true);
-  //     setTimeout(() => setCopied(false), 1600);
-  //   } catch (err) {
-  //     // fallback: prompt
-  //     // eslint-disable-next-line no-alert
-  //     alert(
-  //       "Не удалось автоматически скопировать. Скопируйте вручную: " + botUrl
-  //     );
-  //   }
-  // };
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(botUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1600);
+    } catch {
+      alert(
+        "Не удалось автоматически скопировать. Скопируйте вручную: " + botUrl
+      );
+    }
+  };
 
   return (
     <div className='flex flex-col items-center gap-5 p-4'>
@@ -67,8 +63,7 @@ const TelegramLinkPopup = ({
 
       <p className='text-white text-center text-sm'>
         Do'stingizning yo'nalishi bo'lish uchun ularning havolasini qo'shing.
-        Shundan so'ng, siz ularning yo'nalishi sifatida ro'yxatdan o'tasiz. Bu
-        harakatni qaytarib bo'lmaydi.
+        Shundan so'ng, siz ularning yo'nalishi sifatida ro'yxatdan o'tasiz.
       </p>
 
       <div className='w-full'>
@@ -76,7 +71,6 @@ const TelegramLinkPopup = ({
           <a
             href={botUrl}
             onClick={(e) => {
-              // при клике на саму ссылку — открываем правильно (и внутри WebApp тоже)
               e.preventDefault();
               try {
                 // @ts-ignore
@@ -98,16 +92,16 @@ const TelegramLinkPopup = ({
 
       <div className='w-full flex flex-col gap-2'>
         <button
-          onClick={openTelegramShare}
+          onClick={copyToClipboard}
           className='w-full bg-[#B7F8FF] p-3 transform transition-transform duration-200 rounded-3xl active:scale-95'>
-          Nusxalash
+          {copied ? "Saqlandi" : "Nusxalash"}
         </button>
 
-        {/* <button
+        <button
           onClick={openTelegramShare}
           className='w-full mt-1 bg-[#2AABEE] p-3 rounded-3xl text-white transform transition hover:brightness-105 active:scale-95'>
           Yuborish — Telegram'ga ochish
-        </button> */}
+        </button>
       </div>
     </div>
   );
