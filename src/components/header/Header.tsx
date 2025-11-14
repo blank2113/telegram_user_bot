@@ -4,6 +4,7 @@ import avatar from "../../assets/icons/avatar.svg";
 import { token } from "./header.tokens";
 import { formatNumber } from "../../utils/formatedNumber";
 import { memo } from "react";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   return (
@@ -31,9 +32,9 @@ const Header = () => {
           </p>
         </div>
       </div>
-      <div className={token.block}>
+      <Link to={"/notification"} className={token.block}>
         <img src={bell} alt='bell' className='w-[30px] h-[30px]' />
-      </div>
+      </Link>
     </header>
   );
 };

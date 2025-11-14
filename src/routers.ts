@@ -7,6 +7,7 @@ import Profile from "./pages/Profile";
 import CoinFlip from "./pages/FlipCoinPage";
 import Home from "./pages/Home";
 import InvitePage from "./pages/InvitePage";
+import NotificationPage from "./pages/NotificationPage";
 
 const router = createBrowserRouter([
   {
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
         Component: InvitePage,
       },
     ],
+  },
+  {
+    path: "/notification",
+    Component: NotificationPage,
   },
 ]);
 
