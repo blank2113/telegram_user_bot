@@ -38,19 +38,19 @@ const TelegramLinkPopup = ({
     window.open(shareUrl, "_blank", "noopener,noreferrer");
   };
 
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(botUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1600);
-    } catch (err) {
-      // fallback: prompt
-      // eslint-disable-next-line no-alert
-      alert(
-        "Не удалось автоматически скопировать. Скопируйте вручную: " + botUrl
-      );
-    }
-  };
+  // const copyToClipboard = async () => {
+  //   try {
+  //     await navigator.clipboard.writeText(botUrl);
+  //     setCopied(true);
+  //     setTimeout(() => setCopied(false), 1600);
+  //   } catch (err) {
+  //     // fallback: prompt
+  //     // eslint-disable-next-line no-alert
+  //     alert(
+  //       "Не удалось автоматически скопировать. Скопируйте вручную: " + botUrl
+  //     );
+  //   }
+  // };
 
   return (
     <div className='flex flex-col items-center gap-5 p-4'>
