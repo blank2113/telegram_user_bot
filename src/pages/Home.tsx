@@ -45,12 +45,12 @@ const Home = () => {
   }, [setPaymentStatus, setPaymentStatusOpen]);
 
   return (
-    <div className='px-3 pt-10 pb-10 h-svh relative z-1 flex flex-col items-center justify-center  w-full gap-4 overflow-hidden '>
+    <div className='px-3 pt-10 pb-35 h-svh relative z-1 flex flex-col items-center justify-center  w-full gap-4 overflow-hidden '>
       <AnimatedImage />
       <CustomButton
         title='Pul chiqarish'
         onClick={() => console.log(1)}
-        className='absolute top-4 right-3'
+        className='absolute top-4 right-3 text-[12px] font-medium'
       />
       <h1 className='text-center text-[30px]  text-white font-semibold leading-tight'>
         Pul kiritish/ yechib olish
@@ -63,6 +63,7 @@ const Home = () => {
             <CustomButton
               title='Davom etish'
               onClick={() => setModalOpen(true)}
+              className='text-[12px] font-medium'
             />
           }
         />
@@ -71,7 +72,11 @@ const Home = () => {
           img={<AnimatedCoin className='absolute -top-2 left-2' />}
           className='absolute left-2 bottom-1'
           btn={
-            <CustomButton title='Davom etish' onClick={() => console.log(1)} />
+            <CustomButton
+              title='Davom etish'
+              onClick={() => console.log(1)}
+              className='text-[12px] font-medium'
+            />
           }
         />
       </div>

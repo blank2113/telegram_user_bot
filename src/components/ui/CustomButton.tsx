@@ -1,16 +1,19 @@
+import type { ReactNode } from "react";
+
 type Props = {
   title: string;
   onClick?: () => void;
   className?: string;
   disabled?: boolean;
+  img?: ReactNode;
 };
 
-const CustomButton = ({ title, onClick, className, disabled }: Props) => {
+const CustomButton = ({ title, onClick, className, disabled, img }: Props) => {
   return (
     <button
       disabled={disabled}
       onClick={onClick}
-      className={`inline-flex items-center justify-center px-2 py-2 rounded-full text-[10px] font-extrabold leading-none
+      className={`inline-flex items-center justify-center gap-2 px-2 py-2 rounded-full  font-extrabold leading-none
         ${className}
         ${
           disabled
@@ -25,6 +28,7 @@ const CustomButton = ({ title, onClick, className, disabled }: Props) => {
         transform-gpu
        
         `}>
+      {img}
       {title}
     </button>
   );

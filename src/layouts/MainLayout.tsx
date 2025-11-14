@@ -43,9 +43,11 @@ const MainLayout = () => {
       <div className='absolute inset-0 bg-linear-to-b opacity-35 from-[#09152A] to-[#67C5F8]' />
 
       {isMobile ? (
-        <div className='h-full w-full flex flex-col items-center justify-center'>
+        <div className='h-full w-full flex flex-col items-center justify-center relative'>
           <Header />
+
           <Outlet />
+
           <Navigation />
         </div>
       ) : (
