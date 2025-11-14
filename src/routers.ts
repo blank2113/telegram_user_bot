@@ -4,7 +4,6 @@ import Airdrop from "./pages/Airdrop";
 import Friends from "./pages/Friends";
 import Profile from "./pages/Profile";
 
-import CoinFlip from "./pages/FlipCoinPage";
 import FortuneWheel from "./pages/FortuneWheel";
 import Home from "./pages/Home";
 import InvitePage from "./pages/InvitePage";
