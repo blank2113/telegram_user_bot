@@ -6,6 +6,7 @@ import Profile from "./pages/Profile";
 
 import CoinFlip from "./pages/FlipCoinPage";
 import Home from "./pages/Home";
+import InvitePage from "./pages/InvitePage";
 
 const router = createBrowserRouter([
   {
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
       {
         path: "/profile",
         Component: Profile,
+      },
+      {
+        path: "/invite/:botUsername",
+        Component: InvitePage,
       },
     ],
   },
