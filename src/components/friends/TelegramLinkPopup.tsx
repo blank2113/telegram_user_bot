@@ -39,14 +39,14 @@ const TelegramLinkPopup = ({
 
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(botUrl);
+      await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 1600);
     } catch (err) {
       // fallback: prompt
       // eslint-disable-next-line no-alert
       alert(
-        "Не удалось автоматически скопировать. Скопируйте вручную: " + botUrl
+        "Не удалось автоматически скопировать. Скопируйте вручную: " + shareUrl
       );
     }
   };
@@ -76,7 +76,7 @@ const TelegramLinkPopup = ({
       <div className='w-full'>
         <div className='bg-[#071240B2] w-full p-3 rounded-3xl text-gray-200 text-center break-words select-all'>
           <a
-            href={botUrl}
+            href={shareUrl}
             onClick={(e) => {
               // при клике на саму ссылку — открываем правильно (и внутри WebApp тоже)
               e.preventDefault();
@@ -88,12 +88,12 @@ const TelegramLinkPopup = ({
                   return;
                 }
               } catch {}
-              window.open(botUrl, "_blank", "noopener,noreferrer");
+              window.open(shareUrl, "_blank", "noopener,noreferrer");
             }}
             className='text-cyan-100 underline'
             target='_blank'
             rel='noopener noreferrer'>
-            {botUrl}
+            {shareUrl}
           </a>
         </div>
       </div>
