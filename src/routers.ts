@@ -1,16 +1,16 @@
 import { createBrowserRouter } from "react-router";
 import MainLayout from "./layouts/MainLayout";
-import Airdrop from "./pages/Airdrop";
-import Friends from "./pages/Friends";
-import Profile from "./pages/Profile";
-// import FortuneWheel from "./pages/FortuneWheel";
-import Home from "./pages/Home";
-import InvitePage from "./pages/InvitePage";
-import NotificationPage from "./pages/NotificationPage";
 import AppLayout from "./layouts/AppLayout";
-import Games from "./pages/Games";
-import FourtuneWheel from "./pages/FortuneWheel";
-import CoinFlip from "./pages/FlipCoinPage";
+import { lazy } from "react";
+const Home = lazy(() => import("./pages/Home"));
+const Games = lazy(() => import("./pages/Games"));
+const Airdrop = lazy(() => import("./pages/Airdrop"));
+const Friends = lazy(() => import("./pages/Friends"));
+const Profile = lazy(() => import("./pages/Profile"));
+const InvitePage = lazy(() => import("./pages/InvitePage"));
+const NotificationPage = lazy(() => import("./pages/NotificationPage"));
+const FourtuneWheel = lazy(() => import("./pages/FortuneWheel"));
+const CoinFlip = lazy(() => import("./pages/FlipCoinPage"));
 
 const router = createBrowserRouter([
   {

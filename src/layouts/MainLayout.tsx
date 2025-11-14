@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { Outlet } from "react-router-dom";
 import Navigation from "../components/navigation/Navigation";
 import Header from "../components/header/Header";
@@ -45,8 +45,14 @@ const MainLayout = () => {
       {isMobile ? (
         <div className='h-full w-full flex flex-col items-center justify-center relative'>
           <Header />
-
-          <Outlet />
+          <Suspense
+            fallback={
+              <div className='w-full h-full flex items-center justify-center'>
+                <p className='text-white text-4xl font-semibold'>Loading...</p>
+              </div>
+            }>
+            <Outlet />
+          </Suspense>
 
           <Navigation />
         </div>
