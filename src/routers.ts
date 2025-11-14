@@ -5,6 +5,7 @@ import Friends from "./pages/Friends";
 import Profile from "./pages/Profile";
 
 import CoinFlip from "./pages/FlipCoinPage";
+import FortuneWheel from "./pages/FortuneWheel";
 import Home from "./pages/Home";
 import InvitePage from "./pages/InvitePage";
 import NotificationPage from "./pages/NotificationPage";
@@ -20,7 +21,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/games",
-        Component: CoinFlip,
+        Component: FortuneWheel,
       },
       {
         path: "/airdrop",
