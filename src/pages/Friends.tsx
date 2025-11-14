@@ -13,7 +13,7 @@ const Friends = () => {
       <AnimatedFriendsImage />
       <div className='flex flex-col items-center gap-2 py-5'>
         <h1 className='text-white text-4xl font-semibold'>Do’stlar</h1>
-        <p className='text-white text-center px-3 text-[19px] opacity-90'>
+        <p className='text-white text-center px-3 text-[19px] opacity-90 outline-none'>
           Har bir taklif qilingan do'stingiz uchun balansingizga 10%,
           shuningdek, o'yinlar uchun 30 energiya oling
         </p>

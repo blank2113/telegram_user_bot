@@ -50,7 +50,7 @@ const Home = () => {
       <CustomButton
         title='Pul chiqarish'
         onClick={() => console.log(1)}
-        className='absolute top-4 right-3 text-sm font-medium'
+        className='absolute top-4 right-3 text-[12px] font-medium'
       />
       <h1 className='text-center text-[30px]  text-white font-semibold leading-tight'>
         Pul kiritish/ yechib olish
@@ -63,7 +63,7 @@ const Home = () => {
             <CustomButton
               title='Davom etish'
               onClick={() => setModalOpen(true)}
-              className='text-sm font-medium'
+              className='text-[12px] font-medium'
             />
           }
         />
@@ -75,7 +75,7 @@ const Home = () => {
             <CustomButton
               title='Davom etish'
               onClick={() => console.log(1)}
-              className='text-sm font-medium'
+              className='text-[12px] font-medium'
             />
           }
         />
