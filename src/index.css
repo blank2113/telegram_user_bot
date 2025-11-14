@@ -8,3 +8,167 @@
     background-position: 200px 0;
   }
 }
+
+.game-image-wrapper {
+  width: 216px;
+  height: 216px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.game-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  animation: pulseScale 1.5s ease-in-out infinite;
+}
+
+/* Пульсирующая анимация */
+@keyframes pulseScale {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* enchanted-spin.css */
+
+/* параметр скорости — можно переопределять в родителе через style или класс */
+:root {
+  --enchanted-spin-duration: 6s; /* базовая длительность полного оборота */
+  --enchanted-pulse-duration: 1.6s;
+}
+
+/* контейнер изображения — оптимизация */
+.enchanted-spin,
+.enchanted-spin-slow,
+.enchanted-spin-fast {
+  display: inline-block;
+  transform-origin: 50% 50%;
+  will-change: transform, filter;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* главный спин + лёгкий наклон — линейный зацикленный оборот */
+.enchanted-spin {
+  animation: enchanted-rotate var(--enchanted-spin-duration) linear infinite,
+    enchanted-pulse var(--enchanted-pulse-duration) ease-in-out infinite;
+}
+
+/* варианты скорости */
+.enchanted-spin-slow {
+  --enchanted-spin-duration: 10s;
+}
+.enchanted-spin-fast {
+  --enchanted-spin-duration: 3s;
+}
+
+/* чистая спин-анимация (без пульса) */
+.enchanted-spin-only {
+  animation: enchanted-rotate var(--enchanted-spin-duration) linear infinite;
+}
+
+/* keyframes */
+@keyframes enchanted-rotate {
+  0% {
+    transform: rotate(0deg) translateZ(0);
+  }
+  50% {
+    transform: rotate(180deg) translateZ(0);
+  }
+  100% {
+    transform: rotate(360deg) translateZ(0);
+  }
+}
+
+/* лёгкий пульс + небольшой "подскок" для магического ощущения */
+@keyframes enchanted-pulse {
+  0% {
+    transform: scale(1) rotate(0deg);
+    filter: drop-shadow(0 0 0 rgba(36, 230, 243, 0));
+  }
+  40% {
+    transform: scale(1.04) rotate(0deg);
+    filter: drop-shadow(0 6px 12px rgba(36, 230, 243, 0.06));
+  }
+  60% {
+    transform: scale(0.99) rotate(0deg);
+    filter: drop-shadow(0 8px 20px rgba(36, 230, 243, 0.08));
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    filter: drop-shadow(0 0 0 rgba(36, 230, 243, 0));
+  }
+}
+
+/* плавное появление/затухание при hover (опционально) */
+.enchanted-spin:hover {
+  animation-play-state: running;
+  filter: saturate(1.05);
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .enchanted-spin,
+  .enchanted-spin-slow,
+  .enchanted-spin-fast,
+  .enchanted-spin-only {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+/* spin-wheel.css */
+.spin-wheel,
+.spin-wheel-slow,
+.spin-wheel-fast {
+  display: inline-block;
+  transform-origin: 50% 50%; /* центр вращения */
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* стандартная скорость — 6s на оборот */
+.spin-wheel {
+  animation: wheel-rotate 6s linear infinite;
+}
+
+/* варианты скорости */
+.spin-wheel-slow {
+  animation-duration: 12s;
+}
+.spin-wheel-fast {
+  animation-duration: 3s;
+}
+
+/* плавная линейная анимация вращения */
+@keyframes wheel-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* опционально — остановка на ховере (если хочешь) */
+.spin-wheel:hover {
+  animation-play-state: paused;
+  cursor: pointer;
+}
+
+/* уважение к настройкам пользователя */
+@media (prefers-reduced-motion: reduce) {
+  .spin-wheel,
+  .spin-wheel-slow,
+  .spin-wheel-fast {
+    animation: none !important;
+    transform: none !important;
+  }
+}

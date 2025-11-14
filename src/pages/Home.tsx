@@ -1,48 +1,28 @@
 import CustomBackground from "../components/ui/CustomBackground";
 import CustomButton from "../components/ui/CustomButton";
 import CustomPopup from "../components/ui/CustomPopup";
-import { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import StatusMenu from "../components/home/StatusMenu";
 import useStatusPaymentStore from "../store/statusPayment";
 import StatusPayment from "../components/home/StatusPayment";
 import PaymentStatusAlert from "../components/home/PaymentStatusAlert";
-import { socket } from "../utils/socket";
+
 import AnimatedImage from "../components/home/AnimatedImage";
 import AnimatedLight from "../components/home/AnimatedLight";
 import AnimatedCoin from "../components/home/AnimatedCoin";
 
+const StatusMenuMemo = React.memo(StatusMenu);
+const StatusPaymentMemo = React.memo(StatusPayment);
+const PaymentStatusAlertMemo = React.memo(PaymentStatusAlert);
+
 const Home = () => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const {
-    open,
-    setOpen,
-    paymentStatusOpen,
-    setPaymentStatusOpen,
-    setPaymentStatus,
-  } = useStatusPaymentStore((state) => state);
+  const { open, setOpen, paymentStatusOpen, setPaymentStatusOpen } =
+    useStatusPaymentStore((state) => state);
 
-  useEffect(() => {
-    const anyHandler = (event: string, ...args: any[]) => {
-      const payload = args[0];
-      console.log("[socket any] event:", event, payload);
-      if (event === "withdraw_update") {
-        const status = payload?.status;
-        if (status === "APPROVED") {
-          setPaymentStatus("success");
-        } else if (status === "REJECTED") {
-          setPaymentStatus("404");
-        } else {
-          setPaymentStatus("");
-        }
-        setPaymentStatusOpen(true);
-      }
-    };
-
-    socket.onAny(anyHandler);
-    return () => {
-      socket.offAny(anyHandler);
-    };
-  }, [setPaymentStatus, setPaymentStatusOpen]);
+  const handleCloseModal = useCallback(() => setModalOpen(false), []);
+  // const handleCloseStatus = useCallback(() => setOpen(false), []);
+  // const handleClosePayment = useCallback(() => setPaymentStatusOpen(false), []);
 
   return (
     <div className='px-3 pt-10 pb-35 h-svh relative z-1 flex flex-col items-center justify-center  w-full gap-4 overflow-hidden '>
@@ -83,17 +63,17 @@ const Home = () => {
       <CustomPopup
         open={modalOpen}
         setOpen={setModalOpen}
-        component={<StatusMenu setClose={setModalOpen} />}
+        component={<StatusMenuMemo setClose={handleCloseModal} />}
       />
       <CustomPopup
         open={open}
         setOpen={setOpen}
-        component={<StatusPayment />}
+        component={<StatusPaymentMemo />}
       />
       <CustomPopup
         open={paymentStatusOpen}
         setOpen={setPaymentStatusOpen}
-        component={<PaymentStatusAlert />}
+        component={<PaymentStatusAlertMemo />}
       />
     </div>
   );

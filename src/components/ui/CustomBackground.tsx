@@ -5,11 +5,13 @@ type Props = {
   title: string;
   btn?: ReactNode;
   className?: string;
+  onClick?: () => void;
 };
 
 const CustomBackground = (props: Props) => {
   return (
     <div
+      onClick={props.onClick}
       className={
         "bg-[linear-gradient(90deg,rgba(14,112,191,0.4)_0%,rgba(50,245,240,0.4)_100%)] " +
         "border border-[#24E6F3CC] " +

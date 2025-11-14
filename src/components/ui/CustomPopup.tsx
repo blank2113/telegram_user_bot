@@ -71,6 +71,7 @@ const CustomPopup = ({ open = true, setOpen, component }: Types) => {
 
   if (typeof document === "undefined") return null;
 
+  if (!open) return null;
   return createPortal(
     <AnimatePresence>
       {open && (
