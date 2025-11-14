@@ -19,7 +19,7 @@ const Navigation = () => {
   const { pathname } = useLocation();
 
   return (
-    <div className='w-full px-3 relative z-10 pb-5'>
+    <div className='w-full px-3  z-50  absolute bottom-3'>
       <div
         className=' left-0 right-0 min-h-12 bg-linear-to-r from-[#7CCFE6] to-[#60C3E1] rounded-xl p-2 
       flex items-center justify-between w-full shadow-2xl

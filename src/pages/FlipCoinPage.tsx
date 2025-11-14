@@ -99,7 +99,7 @@ const CoinFlip: FC = () => {
   };
 
   return (
-    <div className='flex items-center justify-center bg-transparent py-16  h-full overflow-y-scroll'>
+    <div className='flex items-center justify-center bg-transparent pt-16 pb-35  h-full overflow-y-scroll'>
       <div className='w-full max-w-md mx-4 rounded-2xl p-4 shadow-md  bg-white/5 backdrop-blur-md  border border-white/10'>
         <div className='flex items-center justify-between mb-3'>
           <div>

@@ -111,7 +111,7 @@ export default function AirDrop() {
   return (
     <div
       ref={wrapRef}
-      className='relative w-full h-full py-2 space-y-4 flex-1 overflow-hidden'>
+      className='relative w-full h-full pt-2 space-y-4 flex-1 overflow-hidden pb-55'>
       <Progress value={value} height={12} max={1000} />
 
       {/* слой с "+1" поверх всего */}

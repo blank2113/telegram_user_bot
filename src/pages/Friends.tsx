@@ -9,7 +9,7 @@ import TelegramLinkPopup from "../components/friends/TelegramLinkPopup";
 const Friends = () => {
   const [open, setOpen] = useState<boolean>(false);
   return (
-    <div className='w-full h-full flex flex-col items-center relative z-10 py-10 overflow-y-scroll'>
+    <div className='w-full h-full flex flex-col items-center relative z-10 pt-10 overflow-y-scroll pb-40'>
       <AnimatedFriendsImage />
       <div className='flex flex-col items-center gap-2 py-5'>
         <h1 className='text-white text-4xl font-semibold'>Do’stlar</h1>

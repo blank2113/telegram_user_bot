@@ -11,7 +11,7 @@ const Profile = () => {
   )}&text=${encodeURIComponent("Присоединяйся к этому боту!")}`;
 
   return (
-    <div className='w-full h-svh flex flex-col items-center py-5 relative  gap-5'>
+    <div className='w-full h-full flex flex-col items-center py-5 relative  gap-5 overflow-y-scroll pb-35'>
       <div className='w-full h-svh opacity-55 absolute top-0 z-2 bg-[#04093A]' />
       <ProfileImg />
       <ProfileName />

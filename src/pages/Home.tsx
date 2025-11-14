@@ -45,7 +45,7 @@ const Home = () => {
   }, [setPaymentStatus, setPaymentStatusOpen]);
 
   return (
-    <div className='px-3 pt-10 pb-10 h-svh relative z-1 flex flex-col items-center justify-center  w-full gap-4 overflow-hidden '>
+    <div className='px-3 pt-10 pb-35 h-svh relative z-1 flex flex-col items-center justify-center  w-full gap-4 overflow-hidden '>
       <AnimatedImage />
       <CustomButton
         title='Pul chiqarish'
