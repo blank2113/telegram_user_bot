@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { IoMdCloseCircle } from "react-icons/io";
 
 type Props = {
@@ -20,7 +19,7 @@ const TelegramLinkPopup = ({
     inviteUrl
   )}&text=${encodeURIComponent(inviteText)}`;
 
-  const [copied, setCopied] = useState(false);
+  // const [copied, setCopied] = useState(false);
 
   const openTelegramShare = (e?: React.MouseEvent) => {
     e?.preventDefault();
@@ -103,7 +102,7 @@ const TelegramLinkPopup = ({
         <button
           onClick={openTelegramShare}
           className='w-full bg-[#B7F8FF] p-3 transform transition-transform duration-200 rounded-3xl active:scale-95'>
-          {copied ? "Saqlandi" : "Nusxalash"}
+          Nusxalash
         </button>
 
         {/* <button
