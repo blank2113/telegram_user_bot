@@ -199,3 +199,44 @@
     animation: none !important;
   }
 }
+
+.floating-image {
+  animation: floatRotate 4s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.image-placeholder {
+  opacity: 1;
+  filter: blur(6px);
+  transition: opacity 0.4s ease, filter 0.4s ease;
+}
+
+.floating-image:load,
+.floating-image-loaded {
+  opacity: 1;
+  filter: none;
+}
+
+@keyframes floatRotate {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate3d(0, 2px, 0) rotate(1deg);
+  }
+  50% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  75% {
+    transform: translate3d(0, -2px, 0) rotate(-1deg);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .floating-image {
+    animation: none !important;
+  }
+}

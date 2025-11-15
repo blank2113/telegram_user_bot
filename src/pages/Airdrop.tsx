@@ -1,172 +1,141 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { useRef, useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Progress from "../components/progress/Progress";
-import touchAv from "../assets/icons/touchAv.svg";
-// import coin from "../assets/icons/coin.svg";
+import touchAv from "../assets/images/Touch.webp";
+import coin from "../assets/images/coin.webp";
 
 const STEP = 1;
-type Pop = { id: number; x: number; y: number };
+const layers = [10, 8, 6];
 
 export default function AirDrop() {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const avatarRef = useRef<HTMLImageElement | null>(null);
   const lastTapRef = useRef(0);
 
-  const avatarRectRef = useRef<DOMRect | null>(null);
-  const wrapRectRef = useRef<DOMRect | null>(null);
+  const countRef = useRef(0);
+  const valueRef = useRef(45);
 
-  const [count, setCount] = useState(0);
-  const [value, setValue] = useState(45);
-  const [_, setPops] = useState<Pop[]>([]);
+  const [pops, setPops] = useState<{ id: number; x: number; y: number }[]>([]);
 
-  // Обновление размеров wrapper и avatar через ResizeObserver (кэшируем DOMRect)
-  useEffect(() => {
-    const roAvatar = new ResizeObserver(() => {
-      if (avatarRef.current)
-        avatarRectRef.current = avatarRef.current.getBoundingClientRect();
-    });
-    const roWrap = new ResizeObserver(() => {
-      if (wrapRef.current)
-        wrapRectRef.current = wrapRef.current.getBoundingClientRect();
-    });
-
-    if (avatarRef.current) {
-      avatarRectRef.current = avatarRef.current.getBoundingClientRect();
-      roAvatar.observe(avatarRef.current);
-    }
-    if (wrapRef.current) {
-      wrapRectRef.current = wrapRef.current.getBoundingClientRect();
-      roWrap.observe(wrapRef.current);
-    }
-
-    const onWindowResize = () => {
-      if (avatarRef.current)
-        avatarRectRef.current = avatarRef.current.getBoundingClientRect();
-      if (wrapRef.current)
-        wrapRectRef.current = wrapRef.current.getBoundingClientRect();
-    };
-    window.addEventListener("resize", onWindowResize);
-
-    return () => {
-      roAvatar.disconnect();
-      roWrap.disconnect();
-      window.removeEventListener("resize", onWindowResize);
-    };
+  const coins = useMemo(() => {
+    return layers.flatMap((count, layerIndex) =>
+      Array.from({ length: count }).map(() => {
+        const size = Math.random() * 20 + 20;
+        const left = Math.random() * 100;
+        const delay = Math.random() * 5;
+        const duration = Math.random() * 6 + 5 - layerIndex;
+        const rotateDir = Math.random() > 0.5 ? 1 : -1;
+        return { size, left, delay, duration, rotateDir };
+      })
+    );
   }, []);
 
-  // Добавляет pop и удаляет через 900ms
-  const spawnPop = useCallback((x: number, y: number) => {
+  const handlePointer = (e: React.PointerEvent) => {
+    const now = performance.now();
+    if (now - lastTapRef.current < 120) return;
+    lastTapRef.current = now;
+
+    // обновляем счетчики
+    countRef.current += 1;
+    valueRef.current = Math.min(1000, valueRef.current + STEP);
+
+    // позиция для визуального "+1"
+    const rect = wrapRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
     const id = Date.now() + Math.floor(Math.random() * 1000);
-    setPops((arr) => {
-      const next = [...arr.slice(-9), { id, x, y }]; // максимум 10
-      return next;
-    });
-    // удаляем через время
+    setPops((arr) => [...arr, { id, x, y }]);
+
+    // удалить через 900ms
     setTimeout(() => {
       setPops((arr) => arr.filter((p) => p.id !== id));
     }, 900);
-  }, []);
-
-  const handlePointer = useCallback(
-    (e: React.PointerEvent) => {
-      // throttle taps
-      const now = performance.now();
-      if (now - lastTapRef.current < 120) return;
-      lastTapRef.current = now;
-
-      // обновляем счётчики
-      setCount((c) => c + 1);
-      setValue((v) => Math.min(1000, v + STEP));
-
-      // вычисляем координаты для попа
-      // 1) если есть cached avatarRect — класть около центра аватара
-      // 2) иначе — использовать координаты касания внутри wrapper
-      const wrapRect =
-        wrapRectRef.current ?? wrapRef.current?.getBoundingClientRect() ?? null;
-      const avatarRect =
-        avatarRectRef.current ??
-        avatarRef.current?.getBoundingClientRect() ??
-        null;
-
-      if (!wrapRect) return;
-
-      let x: number;
-      let y: number;
-
-      if (avatarRect) {
-        // позиция чуть выше центра аватара (как было в оригинале)
-        x = avatarRect.left + avatarRect.width / 2 - wrapRect.left;
-        y = avatarRect.top + avatarRect.height * 0.25 - wrapRect.top; // чуть выше центра
-      } else {
-        // если нет avatarRect, используем позицию указателя
-        x = e.clientX - wrapRect.left;
-        y = e.clientY - wrapRect.top;
-      }
-
-      spawnPop(x, y);
-    },
-    [spawnPop]
-  );
+  };
 
   return (
     <div
       ref={wrapRef}
-      className='relative w-full h-full pt-2 space-y-4 flex-1 overflow-hidden pb-55'>
-      <Progress value={value} height={12} max={1000} />
+      className='relative w-full h-full pt-2 space-y-4 flex-1 overflow-hidden pb-55'
+      onPointerDown={handlePointer}>
+      {/* Прогресс бар */}
+      <Progress value={valueRef.current} height={12} max={1000} />
 
-      {/* слой с "+1" поверх всего */}
-      {/* <div className='pointer-events-none absolute inset-0 z-30'>
-        {pops.map((p) => (
-          <PlusOne key={p.id} x={p.x} y={p.y} />
+      {/* Монеты */}
+      <div className='absolute inset-0 pointer-events-none z-10'>
+        {coins.map((c, i) => (
+          <img
+            key={i}
+            src={coin}
+            alt=''
+            className='coin'
+            style={
+              {
+                width: `${c.size}px`,
+                height: `${c.size}px`,
+                left: `${c.left}%`,
+                animationDelay: `${c.delay}s`,
+                animationDuration: `${c.duration}s`,
+                "--rotate-dir": c.rotateDir,
+                willChange: "transform, opacity",
+              } as any
+            }
+          />
         ))}
-      </div> */}
-
-      {/* Тап-таргет по центру снизу */}
-      <motion.button
-        type='button'
-        onPointerDown={handlePointer}
-        className='absolute left-1/2 bottom-[100px] -translate-x-1/2 focus:outline-none'
-        whileTap={{ scale: 0.95 }}
-        aria-label='Tap to increase'>
-        <span className='absolute inset-0 -z-10 blur-xl rounded-full bg-cyan-300/30' />
-        <motion.img
-          ref={avatarRef}
-          src={touchAv}
-          alt=''
-          className='w-auto h-[clamp(320px,62svh,520px)] max-w-[90vw] select-none pointer-events-none'
-          initial={{ scale: 0.98, rotate: -1, opacity: 0.95 }}
-          animate={{ scale: 1, rotate: 0, opacity: 1 }}
-          transition={{ duration: 0.28, ease: "easeOut" }}
-          draggable={false}
-          decoding='async'
-        />
-      </motion.button>
-
-      <div className='absolute left-4 top-[72px] text-white/90 text-sm font-semibold z-10'>
-        Taps: {count}
       </div>
+
+      {/* Слой "+1" */}
+      <AnimatePresence>
+        {pops.map((p) => (
+          <motion.span
+            key={p.id}
+            initial={{ x: p.x, y: p.y, opacity: 1, scale: 1 }}
+            animate={{ y: p.y - 40, opacity: 0, scale: 1.2 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className='absolute -translate-x-1/2 -translate-y-1/2 text-white font-bold pointer-events-none'>
+            +1
+          </motion.span>
+        ))}
+      </AnimatePresence>
+
+      {/* Аватар */}
+      <motion.img
+        ref={avatarRef}
+        src={touchAv}
+        alt=''
+        className='absolute left-1/2 bottom-[100px] -translate-x-1/2 w-auto h-[clamp(320px,62svh,520px)] max-w-[90vw] select-none pointer-events-none z-20'
+        initial={{ scale: 0.98, rotate: -1, opacity: 0.95 }}
+        animate={{ scale: 1, rotate: 0, opacity: 1 }}
+        transition={{ duration: 0.28, ease: "easeOut" }}
+        draggable={false}
+        decoding='async'
+      />
+
+      {/* CSS */}
+      <style>{`
+        .coin {
+          position: absolute;
+          top: -50px;
+          pointer-events: none;
+          transform-origin: center;
+          animation-name: fallRotate;
+          animation-timing-function: linear;
+          animation-iteration-count: infinite;
+        }
+
+        @keyframes fallRotate {
+          0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+          10% { opacity: 1; }
+          50% { transform: translateY(50vh) rotate(calc(180deg * var(--rotate-dir))); }
+          100% { transform: translateY(100vh) rotate(calc(360deg * var(--rotate-dir))); opacity: 0; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .coin { animation: none !important; }
+        }
+      `}</style>
     </div>
   );
 }
-
-/** Всплывающий "+1" в точке (x, y) — оптимизированный */
-// const PlusOne = memo(function PlusOne({ x, y }: { x: number; y: number }) {
-//   const jitterX = (Math.random() - 0.5) * 12;
-//   const jitterY = (Math.random() - 0.5) * 6;
-
-//   return (
-//     <motion.img
-//       initial={{ x: x + jitterX, y: y + jitterY, opacity: 0, scale: 0.9 }}
-//       animate={{ x: x + jitterX, y: y - 36, opacity: 1, scale: 1 }}
-//       exit={{ opacity: 0 }}
-//       src={coin}
-//       alt=''
-//       transition={{ duration: 0.8, ease: "easeOut" }}
-//       className='absolute -translate-x-1/2 -translate-y-1/2 select-none
-//                  w-[40px] h-[40px] font-extrabold text-white
-//                  transform-gpu will-change-transform
-//                  drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)]'
-//       style={{ left: x, top: y }}
-//     />
-//   );
-// });

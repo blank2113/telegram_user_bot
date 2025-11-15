@@ -1,6 +1,6 @@
 import { memo, type ReactNode } from "react";
 import icon from "../../assets/icons/iconf.svg";
-import icon2 from "../../assets/images/light.png";
+import icon2 from "../../assets/images/light.webp";
 import icon3 from "../../assets/icons/iconf3.svg";
 import icon4 from "../../assets/icons/iconf4.svg";
 import CustomButton from "../ui/CustomButton";

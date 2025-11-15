@@ -1,59 +1,44 @@
 import { useEffect, useRef } from "react";
-import coin from "../../assets/images/hcoin.png";
+import coin from "../../assets/images/coin.webp";
 import bottom from "../../assets/images/bottom.png";
 
 interface AnimatedCoinProps {
   className?: string;
-  // настройка амплитуды/скорости при необходимости
   bounceAmplitude?: number; // px
   bouncePeriod?: number; // ms
   rotateAmplitude?: number; // deg
   rotatePeriod?: number; // ms
 }
 
-const AnimatedCoin = ({
+const AnimatedCoinOptimized = ({
   className,
-  bounceAmplitude = 5,
+  bounceAmplitude = 10,
   bouncePeriod = 2000,
   rotateAmplitude = 9,
   rotatePeriod = 3600,
 }: AnimatedCoinProps) => {
-  const ref = useRef<HTMLImageElement | null>(null);
-  const rafRef = useRef<number | null>(null);
-  const lastRef = useRef<number>(0);
+  const coinRef = useRef<HTMLImageElement | null>(null);
+  const rafRef = useRef<number>(0);
+  const lastTimeRef = useRef<number>(0);
 
   useEffect(() => {
-    const el = ref.current;
+    const el = coinRef.current;
     if (!el) return;
 
-    // Используем will-change + transform — это даёт GPU-ускорение
-    el.style.willChange = "transform, opacity";
+    el.style.willChange = "transform";
 
     const loop = (time: number) => {
-      // ограничим обновления ~60fps (каждые ~16ms)
-      if (time - lastRef.current >= 16) {
-        lastRef.current = time;
+      // Ограничение обновления ~60fps
+      if (time - lastTimeRef.current >= 16) {
+        lastTimeRef.current = time;
 
-        // нормализуем время в миллисекундах
-        const t = time;
+        const tBounce = (time % bouncePeriod) / bouncePeriod;
+        const tRotate = (time % rotatePeriod) / rotatePeriod;
 
-        // Плавный подпрыг: синус, но с фазой чтобы выглядело естественно
-        const bounce =
-          Math.sin((t / bouncePeriod) * Math.PI * 2) * bounceAmplitude;
-
-        // Мягкое покачивание по оси Z (rotate)
-        const rot =
-          Math.sin((t / rotatePeriod) * Math.PI * 2) * rotateAmplitude;
-
-        // Немного дополнительных микродвижений (для живости)
-        const micro =
-          Math.sin((t / 230) * Math.PI * 2) * 0.6 +
-          Math.cos((t / 370) * Math.PI * 2) * 0.6;
-
-        // Собираем финальную трансформацию
-        // translateY: отрицательное — вверх
-        const translateY = -Math.abs(bounce) + micro * 0.6;
-        const rotate = rot + micro * 0.15;
+        // Плавный bounce и rotate
+        const translateY =
+          -Math.abs(Math.sin(tBounce * Math.PI * 2)) * bounceAmplitude;
+        const rotate = Math.sin(tRotate * Math.PI * 2) * rotateAmplitude;
 
         el.style.transform = `translateY(${translateY}px) rotate(${rotate}deg)`;
       }
@@ -62,35 +47,30 @@ const AnimatedCoin = ({
     };
 
     rafRef.current = requestAnimationFrame(loop);
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      rafRef.current = null;
-    };
+
+    return () => cancelAnimationFrame(rafRef.current);
   }, [bounceAmplitude, bouncePeriod, rotateAmplitude, rotatePeriod]);
 
   return (
-    <div className={className}>
+    <div className={`relative ${className ?? ""}`}>
       <img
-        ref={ref}
+        ref={coinRef}
         src={coin}
         alt='coin'
-        className='w-[60px] h-[60px] object-cover'
-        // блокируем pointer-events только если нужно
+        className='w-[55px] h-[55px] object-cover select-none pointer-events-none'
         style={{
-          display: "block",
           transformOrigin: "50% 50%",
-          // небольшая CSS-плавность при резких сменах (не мешает rAF)
-          transition: "filter 120ms linear",
-          willChange: "transform",
         }}
+        draggable={false}
       />
       <img
         src={bottom}
         alt=''
-        className='absolute -bottom-1 left-1.5 w-[50px]'
+        className='absolute -bottom-1 left-0 w-[50px] pointer-events-none select-none'
+        draggable={false}
       />
     </div>
   );
 };
 
-export default AnimatedCoin;
+export default AnimatedCoinOptimized;

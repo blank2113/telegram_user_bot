@@ -1,54 +1,52 @@
 import { useEffect, useRef } from "react";
-import light from "../../assets/images/light.png";
+import light from "../../assets/images/light.webp";
 import bottom from "../../assets/images/bottom.png";
 
-interface AnimatedImageProps {
+interface AnimatedLightProps {
   className?: string;
 }
 
-const AnimatedLight = ({ className }: AnimatedImageProps) => {
+const AnimatedLightOptimized = ({ className }: AnimatedLightProps) => {
   const imgRef = useRef<HTMLImageElement>(null);
-  const animationRef = useRef<number>(0);
-  const lastTimeRef = useRef<number>(0);
+  const rafRef = useRef<number>(0);
 
   useEffect(() => {
+    const el = imgRef.current;
+    if (!el) return;
+
+    el.style.willChange = "opacity";
+
     const animate = (time: number) => {
-      if (!imgRef.current) return;
+      const t = time / 300;
+      const opacity = 0.3 + Math.abs(Math.sin(t)) * 0.7; // 0.3–1.0
+      el.style.opacity = opacity.toString();
 
-      // Ограничиваем обновление ~60fps (каждые 16ms)
-      if (time - lastTimeRef.current > 16) {
-        lastTimeRef.current = time;
-
-        // Мерцание с легкой случайностью для более живого эффекта
-        const base = 0.3; // минимальная яркость
-        const variance = Math.random() * 2.5; // до максимальной яркости
-        imgRef.current.style.opacity = (base + variance).toString();
-      }
-
-      animationRef.current = requestAnimationFrame(animate);
+      rafRef.current = requestAnimationFrame(animate);
     };
 
-    animationRef.current = requestAnimationFrame(animate);
+    rafRef.current = requestAnimationFrame(animate);
 
-    return () => cancelAnimationFrame(animationRef.current);
+    return () => cancelAnimationFrame(rafRef.current);
   }, []);
 
   return (
-    <div className={"" + className}>
+    <div className={`relative ${className ?? ""}`}>
       <img
         ref={imgRef}
         src={light}
         alt='light'
-        className='w-[70px] h-[70px]'
-        style={{ willChange: "opacity", transition: "opacity 0.05s linear" }}
+        className='w-[55px] h-[55px] select-none pointer-events-none'
+        style={{ transformOrigin: "50% 50%" }}
+        draggable={false}
       />
       <img
         src={bottom}
         alt=''
-        className='absolute -bottom-2.3 left-0 w-[50px]'
+        className='absolute -bottom-3.5 -left-1 w-[50px] pointer-events-none select-none'
+        draggable={false}
       />
     </div>
   );
 };
 
-export default AnimatedLight;
+export default AnimatedLightOptimized;
