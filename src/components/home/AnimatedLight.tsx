@@ -8,7 +8,7 @@ interface AnimatedLightProps {
 
 const AnimatedLightOptimized = ({ className }: AnimatedLightProps) => {
   const imgRef = useRef<HTMLImageElement>(null);
-  const rafRef = useRef<number>(0);
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     const el = imgRef.current;
@@ -18,7 +18,7 @@ const AnimatedLightOptimized = ({ className }: AnimatedLightProps) => {
 
     const animate = (time: number) => {
       const t = time / 300;
-      const opacity = 0.3 + Math.abs(Math.sin(t)) * 0.7; // 0.3–1.0
+      const opacity = 0.3 + Math.abs(Math.sin(t)) * 0.7;
       el.style.opacity = opacity.toString();
 
       rafRef.current = requestAnimationFrame(animate);
@@ -26,7 +26,9 @@ const AnimatedLightOptimized = ({ className }: AnimatedLightProps) => {
 
     rafRef.current = requestAnimationFrame(animate);
 
-    return () => cancelAnimationFrame(rafRef.current);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
   }, []);
 
   return (
