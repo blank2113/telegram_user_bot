@@ -172,3 +172,34 @@
     transform: none !important;
   }
 }
+
+.coin {
+  position: absolute;
+  top: -50px;
+  pointer-events: none;
+  transform-origin: center;
+  animation-name: fallRotate;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes fallRotate {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1; /* сразу видимы */
+  }
+  50% {
+    transform: translateY(50vh) rotate(calc(180deg * var(--rotate-dir)));
+    opacity: 1; /* видимы в середине */
+  }
+  100% {
+    transform: translateY(100vh) rotate(calc(360deg * var(--rotate-dir)));
+    opacity: 0; /* исчезают только внизу */
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .coin {
+    animation: none !important;
+  }
+}

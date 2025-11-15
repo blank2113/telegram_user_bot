@@ -1,8 +1,10 @@
-import { useEffect, useRef, useState, useMemo, type FC } from 'react';
-import Konva from 'konva';
-import { Stage, Layer, Group, Wedge, Text, Shape, Ring } from 'react-konva';
-import CustomButton from '../components/ui/CustomButton';
-import CustomInput from '../components/ui/CustomInput';
+// @ts-ignore
+
+import { useEffect, useRef, useState, useMemo, type FC } from "react";
+import Konva from "konva";
+import { Stage, Layer, Group, Wedge, Text, Shape, Ring } from "react-konva";
+import CustomButton from "../components/ui/CustomButton";
+import CustomInput from "../components/ui/CustomInput";
 
 Konva.angleDeg = false;
 // const degToRad = (deg: number) => (deg * Math.PI) / 180;
@@ -11,21 +13,21 @@ function normalizeAngle(a: number) {
 }
 
 const WEDGES = [
-  { color: '#d0b1dd', label: '0' },
-  { color: '#c7a3d6', label: '1' },
-  { color: '#bf95d0', label: '2' },
-  { color: '#b687ca', label: '3' },
-  { color: '#ad78c4', label: '4' },
-  { color: '#a56abd', label: '5' },
-  { color: '#9c5cb7', label: '6' },
-  { color: '#944eb1', label: '7' },
-  { color: '#8848a3', label: '8' },
-  { color: '#7c4295', label: '9' },
-  { color: '#703b87', label: '10' },
-  { color: '#643578', label: '11' },
-  { color: '#592f6a', label: '12' },
-  { color: '#4d295c', label: '13' },
-  { color: '#41224e', label: '14' },
+  { color: "#d0b1dd", label: "0" },
+  { color: "#c7a3d6", label: "1" },
+  { color: "#bf95d0", label: "2" },
+  { color: "#b687ca", label: "3" },
+  { color: "#ad78c4", label: "4" },
+  { color: "#a56abd", label: "5" },
+  { color: "#9c5cb7", label: "6" },
+  { color: "#944eb1", label: "7" },
+  { color: "#8848a3", label: "8" },
+  { color: "#7c4295", label: "9" },
+  { color: "#703b87", label: "10" },
+  { color: "#643578", label: "11" },
+  { color: "#592f6a", label: "12" },
+  { color: "#4d295c", label: "13" },
+  { color: "#41224e", label: "14" },
 ];
 
 const V_SCENE_WIDTH = 440;
@@ -33,7 +35,7 @@ const V_SCENE_HEIGHT = 440;
 
 const innerRadius = V_SCENE_WIDTH / 2 - 40;
 const outerRadius = V_SCENE_WIDTH / 2 - 15;
-const RADIUS = V_SCENE_WIDTH / 2;
+// const RADIUS = V_SCENE_WIDTH / 2;
 const SCENE_CENTER_X = V_SCENE_WIDTH / 2;
 const SCENE_CENTER_Y = V_SCENE_HEIGHT / 2;
 
@@ -54,6 +56,7 @@ const FourtuneWheel: FC = () => {
 
   const updateSize = () => {
     if (!stageContainerRef.current) return;
+    // @ts-ignore
     const containerWidth = stageContainerRef.current.offsetWidth;
     const scale = containerWidth / V_SCENE_WIDTH;
 
@@ -66,10 +69,10 @@ const FourtuneWheel: FC = () => {
 
   useEffect(() => {
     updateSize();
-    window.addEventListener('resize', updateSize);
+    window.addEventListener("resize", updateSize);
 
     return () => {
-      window.removeEventListener('resize', updateSize);
+      window.removeEventListener("resize", updateSize);
     };
   }, []);
 
@@ -81,29 +84,29 @@ const FourtuneWheel: FC = () => {
     // const tx = Math.cos(angle / 2) * Rmid;
     const ty = Math.sin(angle / 2) * Rmid;
 
-    return WEDGES.map(({ color, label }) => {
+    return WEDGES.map(({ label }) => {
       return (
         <Group key={label} rotation={(2 * +label * Math.PI) / WEDGES.length}>
           <Wedge
             radius={radius}
             angle={angle}
-            stroke="#fff"
+            stroke='#fff'
             strokeWidth={2.5}
             fillRadialGradientStartPoint={{ x: 0, y: 0 }}
             fillRadialGradientStartRadius={0}
             fillRadialGradientEndPoint={{ x: 0, y: 0 }}
             fillRadialGradientEndRadius={150}
-            fillRadialGradientColorStops={[0, '#e10fa3', 0.8, '#5900cb']}
-            fill="#64e9f8"
-            fillPriority="radial-gradient"
+            fillRadialGradientColorStops={[0, "#e10fa3", 0.8, "#5900cb"]}
+            fill='#64e9f8'
+            fillPriority='radial-gradient'
             strokeLinearGradientStartPoint={{ x: 100, y: 0 }}
             strokeLinearGradientEndPoint={{ x: 150, y: 0 }}
-            strokeLinearGradientColorStops={[0, '#5900cb', 1, '#e10fa3']}
+            strokeLinearGradientColorStops={[0, "#5900cb", 1, "#e10fa3"]}
           />
           <Text
             text={label}
             fontSize={24}
-            fill="white"
+            fill='white'
             rotation={angle / 2} //+ Math.PI / 2
             x={radius - radius * Math.tan(angle / 2)}
             y={ty}
@@ -163,38 +166,35 @@ const FourtuneWheel: FC = () => {
 
   const getValueAndSpin = () => {
     const value = Math.floor(Math.random() * WEDGES.length);
-    console.log('DEBUG: Target value - ', value);
+    console.log("DEBUG: Target value - ", value);
     spinTo(value);
   };
 
   return (
-    <div className="flex items-center justify-center bg-transparent py-16 w-full h-full overflow-y-scroll">
-      <div className="w-full max-w-md mx-4 rounded-2xl shadow-md py-4 px-1 bg-white/5 backdrop-blur-md  border border-white/10">
+    <div className='flex items-center justify-center bg-transparent py-16 w-full h-full overflow-y-scroll'>
+      <div className='w-full max-w-md mx-4 rounded-2xl shadow-md py-4 px-1 bg-white/5 backdrop-blur-md  border border-white/10'>
         <div
           ref={stageContainerRef}
-          id="wheel-container"
-          className="wheel-container flex flex-col justify-center items-center"
+          id='wheel-container'
+          className='wheel-container flex flex-col justify-center items-center'
           style={{
-            position: 'relative',
-            width: '100%',
-            height: '100%',
-          }}
-        >
+            position: "relative",
+            width: "100%",
+            height: "100%",
+          }}>
           <>
             <Stage
               ref={stageRef}
               width={stageSize.width}
               height={stageSize.height}
               scaleX={stageSize.scale}
-              scaleY={stageSize.scale}
-            >
+              scaleY={stageSize.scale}>
               <Layer ref={layerRef} listening={false}>
                 <Group
                   ref={wheelRef}
                   rotation={0}
                   x={SCENE_CENTER_X}
-                  y={SCENE_CENTER_Y}
-                >
+                  y={SCENE_CENTER_Y}>
                   {wedges}
 
                   <Ring
@@ -213,8 +213,8 @@ const FourtuneWheel: FC = () => {
                     //   '#e10fa3', // outer color
                     // ]}
                     shadowBlur={10}
-                    shadowColor="#e10fa3"
-                    fill="#5900cb"
+                    shadowColor='#e10fa3'
+                    fill='#5900cb'
                     // strokeLinearGradientStartPoint={{ x: -90, y: 0 }}
                     // strokeLinearGradientEndPoint={{ x: 90, y: 0 }}
                     // strokeLinearGradientColorStops={[
@@ -231,8 +231,8 @@ const FourtuneWheel: FC = () => {
                     // x={SCENE_CENTER_X}
                     // y={SCENE_CENTER_Y}
                     shadowBlur={10}
-                    shadowColor="blue"
-                    sceneFunc={(ctx, shape) => {
+                    shadowColor='blue'
+                    sceneFunc={(ctx) => {
                       for (let a = 0; a < Math.PI * 2; a += 0.7) {
                         // точка в середине толщины кольца
                         const x =
@@ -243,7 +243,7 @@ const FourtuneWheel: FC = () => {
                           (innerRadius + (outerRadius - innerRadius) / 2);
 
                         ctx.beginPath();
-                        ctx.fillStyle = '#fff';
+                        ctx.fillStyle = "#fff";
                         ctx.arc(x, y, 6, 0, Math.PI * 2);
                         ctx.fill();
                       }
@@ -253,30 +253,30 @@ const FourtuneWheel: FC = () => {
 
                 <Wedge
                   ref={pointerRef}
-                  fill={'white'}
+                  fill={"white"}
                   angle={0.5}
                   radius={45}
                   x={SCENE_CENTER_X}
                   y={V_SCENE_HEIGHT - V_SCENE_HEIGHT * 0.88}
                   rotation={-Math.PI / 2 - 0.25}
-                  stroke={'#944eb1'}
+                  stroke={"#944eb1"}
                   shadowBlur={10}
-                  shadowColor="red"
+                  shadowColor='red'
                 />
               </Layer>
             </Stage>
 
-            <div className="flex flex-col gap-6 w-full">
-              <CustomInput pl="Qaysi son?" value="" onChange={console.log} />
-              <div className="flex gap-4">
-                <CustomInput pl="Nechi pul?" value="" onChange={console.log} />
+            <div className='flex flex-col gap-6 w-full'>
+              <CustomInput pl='Qaysi son?' value='' onChange={console.log} />
+              <div className='flex gap-4'>
+                <CustomInput pl='Nechi pul?' value='' onChange={console.log} />
                 <CustomButton
                   onClick={() => {
                     getValueAndSpin();
                   }}
                   disabled={isSpinning}
-                  title={isSpinning ? 'Aylanish...' : 'O’ynash'}
-                  className="text-[12px] font-semibold"
+                  title={isSpinning ? "Aylanish..." : "O’ynash"}
+                  className='text-[12px] font-semibold'
                 />
               </div>
             </div>

@@ -6,7 +6,6 @@ import StatusMenu from "../components/home/StatusMenu";
 import useStatusPaymentStore from "../store/statusPayment";
 import StatusPayment from "../components/home/StatusPayment";
 import PaymentStatusAlert from "../components/home/PaymentStatusAlert";
-
 import AnimatedImage from "../components/home/AnimatedImage";
 import AnimatedLight from "../components/home/AnimatedLight";
 import AnimatedCoin from "../components/home/AnimatedCoin";
@@ -32,8 +31,8 @@ const Home = () => {
         onClick={() => console.log(1)}
         className='absolute top-4 right-3 text-[12px] font-medium'
       />
-      <h1 className='text-center text-[30px]  text-white font-semibold leading-tight'>
-        Pul kiritish/ yechib olish
+      <h1 className='text-center text-[30px]  text-white font-semibold leading-tight mb-8'>
+        Pul kiritish / yechib olish
       </h1>
       <div className='w-full flex flex-col items-center justify-end gap-3'>
         <CustomBackground

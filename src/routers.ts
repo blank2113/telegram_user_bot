@@ -1,6 +1,5 @@
 import { createBrowserRouter } from "react-router";
 import MainLayout from "./layouts/MainLayout";
-import AppLayout from "./layouts/AppLayout";
 import { lazy } from "react";
 const Home = lazy(() => import("./pages/Home"));
 const Games = lazy(() => import("./pages/Games"));
@@ -15,51 +14,45 @@ const CoinFlip = lazy(() => import("./pages/FlipCoinPage"));
 const router = createBrowserRouter([
   {
     path: "/",
-    Component: AppLayout,
+    Component: MainLayout,
     children: [
       {
-        path: "/",
-        Component: MainLayout,
-        children: [
-          {
-            index: true,
-            Component: Home,
-          },
-          {
-            path: "/games",
-            Component: Games,
-          },
-          {
-            path: "/airdrop",
-            Component: Airdrop,
-          },
-          {
-            path: "/friends",
-            Component: Friends,
-          },
-          {
-            path: "/profile",
-            Component: Profile,
-          },
-          {
-            path: "/invite/:botUsername",
-            Component: InvitePage,
-          },
-          {
-            path: "/wheel",
-            Component: FourtuneWheel,
-          },
-          {
-            path: "/flip_coin",
-            Component: CoinFlip,
-          },
-        ],
+        index: true,
+        Component: Home,
       },
       {
-        path: "/notification",
-        Component: NotificationPage,
+        path: "/games",
+        Component: Games,
+      },
+      {
+        path: "/airdrop",
+        Component: Airdrop,
+      },
+      {
+        path: "/friends",
+        Component: Friends,
+      },
+      {
+        path: "/profile",
+        Component: Profile,
+      },
+      {
+        path: "/invite/:botUsername",
+        Component: InvitePage,
+      },
+      {
+        path: "/wheel",
+        Component: FourtuneWheel,
+      },
+      {
+        path: "/flip_coin",
+        Component: CoinFlip,
       },
     ],
+  },
+  {
+    path: "/notification",
+    Component: NotificationPage,
   },
 ]);
 

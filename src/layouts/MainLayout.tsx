@@ -1,13 +1,11 @@
 import { useState, useEffect, Suspense } from "react";
 import { Outlet } from "react-router-dom";
-import Navigation from "../components/navigation/Navigation";
-import Header from "../components/header/Header";
-import bg from "../assets/images/mainbg.jpg";
+import bg from "../assets/images/mainbg.webp";
 import UnAuthorizePage from "../pages/UnAuthorizePage";
+import coin from "../assets/icons/coin.svg"; // иконка монеты
 
 const MainLayout = () => {
   const [isMobile, setIsMobile] = useState<boolean>(false);
-  // const [userId, setUserId] = useState<number | null>(null);
 
   useEffect(() => {
     const checkScreen = () => setIsMobile(window.innerWidth < 768);
@@ -16,35 +14,51 @@ const MainLayout = () => {
     return () => window.removeEventListener("resize", checkScreen);
   }, []);
 
-  // useEffect(() => {
-  //   const urlParams = new URLSearchParams(window.location.search);
-  //   const startParam = urlParams.get("start");
-
-  //   if (startParam) {
-  //     try {
-  //       // в браузере вместо Buffer используем atob
-  //       const decoded = JSON.parse(atob(startParam));
-  //       if (decoded.user_id) {
-  //         setUserId(Number(decoded.user_id));
-  //       }
-  //     } catch (err) {
-  //       console.error("Failed to parse start param:", err);
-  //     }
-  //   }
-  // }, []);
+  const coins = Array.from({ length: 30 }); // количество падающих монет
 
   return (
     <main
-      className='min-h-screen w-screen h-svh flex flex-col items-center justify-center'
+      className='min-h-screen w-screen h-svh flex flex-col items-center justify-center relative overflow-hidden'
       style={{
         background: `url(${bg}) no-repeat center center / cover`,
-        overflow: "hidden",
       }}>
-      <div className='absolute inset-0 bg-linear-to-b opacity-35 from-[#09152A] to-[#67C5F8]' />
+      {/* Градиент */}
+      <div className='absolute inset-0 bg-linear-to-b opacity-45 from-[#09152A] to-[#67C5F8]' />
 
+      {/* Падающие монеты */}
+      <div className='absolute inset-0 pointer-events-none z-10' aria-hidden>
+        {coins.map((_, i) => {
+          const size = Math.random() * 15 + 15;
+          const left = Math.random() * 100;
+          const delay = Math.random() * 5;
+          const duration = Math.random() * 6 + 3; // скорость падения
+          const rotateDir = Math.random() > 0.5 ? 1 : -1;
+
+          return (
+            <img
+              key={i}
+              src={coin}
+              alt='coin'
+              className='coin'
+              style={
+                {
+                  width: `${size}px`,
+                  height: `${size}px`,
+                  left: `${left}%`,
+                  animationDelay: `${delay}s`,
+                  animationDuration: `${duration}s`,
+                  transform: `rotate(0deg)`,
+                  "--rotate-dir": rotateDir,
+                } as any
+              }
+            />
+          );
+        })}
+      </div>
+
+      {/* Контент */}
       {isMobile ? (
-        <div className='h-full w-full flex flex-col items-center justify-center relative'>
-          <Header />
+        <div className='h-full w-full flex flex-col items-center justify-center relative z-20'>
           <Suspense
             fallback={
               <div className='w-full h-full flex items-center justify-center'>
@@ -53,8 +67,6 @@ const MainLayout = () => {
             }>
             <Outlet />
           </Suspense>
-
-          <Navigation />
         </div>
       ) : (
         <UnAuthorizePage />

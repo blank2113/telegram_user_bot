@@ -14,7 +14,7 @@ const PaymentStatusAlert = () => {
         setPaymentStatusOpen(false);
       }, 3000);
 
-      return () => clearTimeout(timer); // очистка таймера при размонтировании или смене статуса
+      return () => clearTimeout(timer);
     }
   }, [paymentStatus, setPaymentStatus, setPaymentStatusOpen]);
 

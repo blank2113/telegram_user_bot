@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import avatar from "../../assets/images/img1.png";
+import avatar from "../../assets/images/home_main_img.webp";
 import { FaEdit } from "react-icons/fa";
 
 const ProfileImg = () => {

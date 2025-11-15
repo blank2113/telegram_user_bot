@@ -1,9 +1,12 @@
 import { useState, useRef, useEffect, type FC } from "react";
-import { motion, type Transition } from "framer-motion";
+import { motion, useAnimation, type Transition } from "framer-motion";
 import back from "../assets/images/back.png";
 import front from "../assets/images/front.png";
 
 type CoinSide = "heads" | "tails";
+
+const clamp = (v: number, min: number, max: number) =>
+  Math.max(min, Math.min(max, v));
 
 const CoinFlip: FC = () => {
   const [balance, setBalance] = useState<number>(1000);
@@ -11,35 +14,50 @@ const CoinFlip: FC = () => {
   const [message, setMessage] = useState<string>("");
   const [isFlipping, setIsFlipping] = useState<boolean>(false);
   const [lastResult, setLastResult] = useState<CoinSide | null>(null);
-  const [rotation, setRotation] = useState<number>(0);
   const rotationRef = useRef<number>(0);
 
-  const [isTelegramWebApp, setIsTelegramWebApp] = useState<boolean>(false);
-  useEffect(() => {
-    setIsTelegramWebApp(Boolean(window.Telegram && window.Telegram.WebApp));
-  }, []);
-  console.log(isTelegramWebApp);
+  const controls = useAnimation();
 
   const haptic = (type: "light" | "medium" | "heavy" = "light") => {
     try {
-      if (navigator.vibrate) {
-        navigator.vibrate(type === "light" ? 20 : type === "medium" ? 40 : 70);
+      if (typeof navigator !== "undefined" && (navigator as any).vibrate) {
+        (navigator as any).vibrate(
+          type === "light" ? 20 : type === "medium" ? 40 : 70
+        );
       }
     } catch {}
   };
 
   const [isMobile, setIsMobile] = useState<boolean>(false);
   useEffect(() => {
-    const onResize = () => setIsMobile(window.innerWidth < 768);
+    const onResize = () =>
+      setIsMobile(typeof window !== "undefined" && window.innerWidth < 768);
     onResize();
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  const flipCoin = (choice: CoinSide) => {
+  // Transition конфигурация
+  const coinTransition: Transition = {
+    rotateX: {
+      type: "tween",
+      ease: [0.22, 1, 0.36, 1],
+      duration: isMobile ? 1.2 : 1.4,
+    },
+    y: {
+      duration: isMobile ? 1.2 : 1.4,
+      times: [0, 0.28, 0.78, 1],
+      ease: "easeInOut",
+    },
+    scale: { duration: isMobile ? 1.2 : 1.4, ease: "easeInOut" },
+  };
+
+  const flipCoin = async (choice: CoinSide) => {
     if (isFlipping) return;
-    const stake = Number(bet) || 0;
-    if (stake <= 0) {
+
+    // безопасный парсинг ставки
+    const stake = Number(bet);
+    if (!Number.isFinite(stake) || stake <= 0) {
       setMessage("Введите ставку больше 0");
       return;
     }
@@ -52,20 +70,32 @@ const CoinFlip: FC = () => {
     setIsFlipping(true);
 
     const result: CoinSide = Math.random() < 0.5 ? "heads" : "tails";
-    const spins = Math.floor(Math.random() * 3) + (isMobile ? 3 : 4);
-    const extra = result === "heads" ? 0 : 180;
-    const targetRotation =
-      Math.round(rotationRef.current / 360) * 360 + spins * 360 + extra;
+
+    // количество оборотов с небольшой вариативность
+    const spins = Math.floor(Math.random() * 3) + (isMobile ? 3 : 4); // 3..5 или 4..6
+    const extra = result === "heads" ? 0 : 180; // ориентация
+
+    const base = Math.round(rotationRef.current / 360) * 360;
+    const targetRotation = base + spins * 360 + extra;
 
     rotationRef.current = targetRotation;
-    setRotation(targetRotation);
 
-    // результат и баланс будем обновлять после таймаута
-    const totalMs = isMobile ? 1200 : 1400;
-    setTimeout(() => {
+    // анимируем с помощью контроллера фреймер-моушн — это даёт промис и предотвращает гонки с setTimeout
+    try {
+      // animate shadow + coin together — используя controls
+      await controls.start(
+        {
+          rotateX: targetRotation,
+          y: isMobile ? [-110, -22, 0] : [-130, -26, 0],
+          scale: [1, 1.03, 1.02, 1],
+        },
+        coinTransition
+      );
+
+      // после завершения анимации — обновляем состояние
       setLastResult(result);
       const won = result === choice;
-      setBalance((b) => (won ? b + stake : b - stake));
+      setBalance((b) => (won ? b + stake : Math.max(0, b - stake)));
       setMessage(
         won
           ? `Вы выиграли ${stake} — выпало ${
@@ -76,31 +106,32 @@ const CoinFlip: FC = () => {
             }`
       );
       haptic(won ? "light" : "medium");
-
+    } catch (err) {
+      // на случай непредвиденных ошибок
+      console.error("Flip animation failed:", err);
+      setMessage("Произошла ошибка при броске");
+    } finally {
       setIsFlipping(false);
-
-      // больше не трогаем setRotation
-      // rotationRef.current = extra; <- оставляем только ref, если нужно
-    }, totalMs);
+    }
   };
 
-  const coinTransition: Transition = {
-    rotateX: {
-      type: "tween",
-      ease: [0.22, 1, 0.36, 1],
-      duration: 1.4,
-    },
-    y: {
-      duration: 1.4,
-      times: [0, 0.28, 0.78, 1],
-      ease: "easeInOut",
-    },
-    scale: { duration: 1.4, ease: "easeInOut" },
+  useEffect(() => {
+    // если хотим чтобы DOM соответствовал ref при монтировании
+    controls.set({ rotateX: rotationRef.current });
+  }, [controls]);
+
+  // небольшой помощник по вводу: не позволять отрицательные значения
+  const onBetChange = (val: string) => {
+    // пустая строка -> 0
+    if (val === "") return setBet(0);
+    const n = Number(val);
+    if (!Number.isFinite(n)) return;
+    setBet(clamp(Math.round(n), 1, 1_000_000));
   };
 
   return (
-    <div className='flex items-center justify-center bg-transparent pt-16 pb-35  h-full overflow-y-scroll'>
-      <div className='w-full max-w-md mx-4 rounded-2xl p-4 shadow-md  bg-white/5 backdrop-blur-md  border border-white/10'>
+    <div className='flex items-center justify-center bg-transparent pt-16 pb-35 h-full overflow-y-auto'>
+      <div className='w-full max-w-md mx-4 rounded-2xl p-4 shadow-md bg-white/5 backdrop-blur-md border border-white/10'>
         <div className='flex items-center justify-between mb-3'>
           <div>
             <div className='text-sm text-white relative z-10'>Баланс</div>
@@ -124,6 +155,7 @@ const CoinFlip: FC = () => {
             <div
               className={`${isMobile ? "w-28 h-28" : "w-36 h-36"} relative`}
               style={{ perspective: 1000 }}>
+              {/* тень под монетой */}
               <motion.div
                 className='absolute left-1/2 -translate-x-1/2 bottom-2 rounded-full pointer-events-none'
                 style={{
@@ -156,19 +188,8 @@ const CoinFlip: FC = () => {
               <motion.div
                 className='w-full h-full rounded-full flex items-center justify-center select-none relative'
                 style={{ transformStyle: "preserve-3d", perspective: 1000 }}
-                animate={{
-                  rotateX: rotation,
-                  y: isFlipping
-                    ? isMobile
-                      ? [-110, -22, 0]
-                      : [-130, -26, 0]
-                    : 0,
-                  scale: isFlipping ? [1, 1.03, 1.02, 1] : 1,
-                }}
-                transition={coinTransition}
-                onAnimationComplete={() => {
-                  if (isFlipping) setIsFlipping(false);
-                }}>
+                animate={controls}
+                initial={{ rotateX: rotationRef.current, y: 0, scale: 1 }}>
                 {/* Лицевая сторона */}
                 <div
                   className='absolute inset-0'
@@ -180,6 +201,7 @@ const CoinFlip: FC = () => {
                     src={front}
                     alt='front'
                     className='w-full h-full object-cover rounded-full'
+                    draggable={false}
                   />
                 </div>
 
@@ -194,6 +216,7 @@ const CoinFlip: FC = () => {
                     src={back}
                     alt='back'
                     className='w-full h-full object-cover rounded-full'
+                    draggable={false}
                   />
                 </div>
               </motion.div>
@@ -204,7 +227,7 @@ const CoinFlip: FC = () => {
             <label className='text-xs text-white'>Ставка</label>
             <input
               value={bet}
-              onChange={(e) => setBet(Number(e.target.value))}
+              onChange={(e) => onBetChange(e.target.value)}
               type='number'
               min={1}
               className='w-full p-3 rounded-lg border border-gray-100 text-sm text-white'
@@ -214,6 +237,7 @@ const CoinFlip: FC = () => {
               <button
                 onClick={() => flipCoin("heads")}
                 disabled={isFlipping}
+                aria-pressed={isFlipping}
                 style={{
                   background: "linear-gradient(90deg,#7C3AED,#4F46E5)",
                   color: "white",
@@ -224,6 +248,7 @@ const CoinFlip: FC = () => {
               <button
                 onClick={() => flipCoin("tails")}
                 disabled={isFlipping}
+                aria-pressed={isFlipping}
                 style={{
                   background: "linear-gradient(90deg,#059669,#10B981)",
                   color: "white",

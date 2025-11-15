@@ -1,7 +1,7 @@
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import NotificationList from "../components/notification/NotificationList";
-import bg from "../assets/images/mainbg.jpg";
+import bg from "../assets/images/mainbg.webp";
 
 const NotificationPage = () => {
   const router = useNavigate();
