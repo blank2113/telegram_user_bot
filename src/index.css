@@ -240,3 +240,17 @@
     animation: none !important;
   }
 }
+
+@keyframes light-glow {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-light-glow {
+  animation: light-glow 1s infinite ease-in-out;
+}

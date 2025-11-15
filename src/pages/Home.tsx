@@ -50,7 +50,7 @@ const Home = () => {
         />
         <CustomBackground
           title='Limon sotib olish'
-          img={<AnimatedCoin className='absolute -top-3 -left-1' />}
+          img={<AnimatedCoin className='absolute -top-4 -left-1' />}
           className='absolute left-2 bottom-1'
           btn={
             <CustomButton

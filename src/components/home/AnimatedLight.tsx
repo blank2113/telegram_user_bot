@@ -1,4 +1,3 @@
-import { useEffect, useRef } from "react";
 import light from "../../assets/images/light.webp";
 import bottom from "../../assets/images/bottom.png";
 
@@ -6,39 +5,13 @@ interface AnimatedLightProps {
   className?: string;
 }
 
-const AnimatedLightOptimized = ({ className }: AnimatedLightProps) => {
-  const imgRef = useRef<HTMLImageElement>(null);
-  const rafRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    const el = imgRef.current;
-    if (!el) return;
-
-    el.style.willChange = "opacity";
-
-    const animate = (time: number) => {
-      const t = time / 300;
-      const opacity = 0.3 + Math.abs(Math.sin(t)) * 0.7;
-      el.style.opacity = opacity.toString();
-
-      rafRef.current = requestAnimationFrame(animate);
-    };
-
-    rafRef.current = requestAnimationFrame(animate);
-
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
-  }, []);
-
+const AnimatedLightCSS = ({ className }: AnimatedLightProps) => {
   return (
     <div className={`relative ${className ?? ""}`}>
       <img
-        ref={imgRef}
         src={light}
         alt='light'
-        className='w-[55px] h-[55px] select-none pointer-events-none'
-        style={{ transformOrigin: "50% 50%" }}
+        className='w-[55px] h-[55px] select-none pointer-events-none animate-light-glow'
         draggable={false}
       />
       <img
@@ -51,4 +24,4 @@ const AnimatedLightOptimized = ({ className }: AnimatedLightProps) => {
   );
 };
 
-export default AnimatedLightOptimized;
+export default AnimatedLightCSS;
