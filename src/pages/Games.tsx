@@ -2,7 +2,7 @@ import GamesAnimatedImage from "../components/games/GamesAnimatedImage";
 import CustomBackground from "../components/ui/CustomBackground";
 import CustomButton from "../components/ui/CustomButton";
 import wheel from "../assets/images/wheel_bg.png";
-import coin from "../assets/icons/coin.svg";
+import coin from "../assets/images/coin.webp";
 import { useNavigate } from "react-router-dom";
 
 const Games = () => {
@@ -37,7 +37,7 @@ sotib olish'
           <img
             src={wheel}
             alt=''
-            className='w-[90px] h-[90px] object-cover absolute -top-6 left-0 spin-wheel'
+            className='w-20 h-20 object-cover absolute -top-4 left-0 spin-wheel'
           />
         }
         onClick={() => navigate("/wheel")}
@@ -51,7 +51,7 @@ sotib olish'
           <img
             src={coin}
             alt=''
-            className='w-[85px] h-[85px] object-cover absolute -top-5 left-0 enchanted-spin'
+            className='w-[75px] h-[75px] object-cover absolute -top-3 left-0 enchanted-spin'
           />
         }
         onClick={() => navigate("/flip_coin")}

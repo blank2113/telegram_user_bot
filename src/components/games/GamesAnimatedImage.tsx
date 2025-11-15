@@ -1,5 +1,5 @@
 import { memo } from "react";
-import image from "../../assets/images/games_png.png";
+import image from "../../assets/images/games_png.webp";
 
 const GamesAnimatedImage = () => {
   return (

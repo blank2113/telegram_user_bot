@@ -1,11 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
 import type { Links } from "./_types";
-import icon1 from "../../assets/icons/icon1.svg";
-import icon2 from "../../assets/icons/icon2.svg";
-import icon3 from "../../assets/icons/icon3.svg";
-import icon4 from "../../assets/icons/icon4.svg";
-import icon5 from "../../assets/icons/icon5.svg";
-import { motion } from "framer-motion";
+import icon1 from "../../assets/images/icon.webp";
+import icon2 from "../../assets/images/icon2.webp";
+import icon3 from "../../assets/images/icon3.webp";
+import icon4 from "../../assets/images/icon4.webp";
+import icon5 from "../../assets/images/icon5.webp";
 
 const links: Links[] = [
   { id: 1, name: "Pul kiritish", link: "/", icon: icon1 },
@@ -19,32 +18,32 @@ const Navigation = () => {
   const { pathname } = useLocation();
 
   return (
-    <div className='w-full px-3  z-50  absolute bottom-3'>
-      <div
-        className=' left-0 right-0 min-h-12 bg-linear-to-r from-[#7CCFE6] to-[#60C3E1] rounded-xl p-2 
-      flex items-center justify-between w-full shadow-2xl
-      '>
-        {links.map((el) => (
-          <Link
-            to={el.link}
-            key={el.id}
-            className={
-              pathname == el.link
-                ? "flex flex-col items-center justify-center gap-2 bg-[#40B5DB]  p-2 rounded-xl"
-                : "flex flex-col items-center justify-center gap-2  p-2 rounded-xl"
-            }>
-            <motion.img
-              initial={{ scale: 1 }}
-              animate={el.link === pathname ? { scale: 1.25 } : { scale: 1 }}
-              transition={{ duration: 0.3 }}
-              src={el.icon}
-              alt=''
-            />
-            <p className='text-[11px] text-white'>{el.name}</p>
-          </Link>
-        ))}
+    <nav className='w-full px-3 z-50 absolute bottom-3'>
+      <div className='flex justify-between items-center w-full p-2 bg-linear-to-r from-[#7CCFE6] to-[#60C3E1] rounded-xl shadow-3xl'>
+        {links.map((el) => {
+          const active = pathname === el.link;
+
+          return (
+            <Link
+              key={el.id}
+              to={el.link}
+              className={`flex flex-col items-center justify-center gap-1 p-1.5 rounded-xl transition-all duration-300 
+                ${active ? "bg-[#40B5DB] scale-110" : "bg-transparent"}`}
+              style={{ willChange: "transform, background-color" }}>
+              <img
+                src={el.icon}
+                alt={el.name}
+                className={`w-6 h-6 transition-transform duration-300 ${
+                  active ? "scale-110" : "scale-100"
+                }`}
+                style={{ willChange: "transform" }}
+              />
+              <p className='text-[10px] text-white'>{el.name}</p>
+            </Link>
+          );
+        })}
       </div>
-    </div>
+    </nav>
   );
 };
 

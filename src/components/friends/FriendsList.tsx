@@ -1,7 +1,7 @@
 import { memo } from "react";
 import star from "../../assets/icons/star.svg";
 import UpdateButton from "./UpdateButton";
-import avatar from "../../assets/icons/touchAv.svg";
+import avatar from "../../assets/images/Touch.webp";
 import icon from "../../assets/icons/icon22.svg";
 
 type ListItemType = {
