@@ -9,7 +9,7 @@ const Games = () => {
   const navigate = useNavigate();
 
   return (
-    <div className='w-full h-full relative z-10 py-5 px-3 flex flex-col items-center gap-5'>
+    <div className='w-full h-full relative z-10 pt-5 pb-34 px-3 flex flex-col items-center gap-5 overflow-y-scroll '>
       <CustomButton
         title='Status
 sotib olish'
