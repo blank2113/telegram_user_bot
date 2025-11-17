@@ -1,4 +1,3 @@
-import useAuthStore from "../../store/authStore";
 import useClickStore from "../../store/clickStore";
 
 // Progress.tsx

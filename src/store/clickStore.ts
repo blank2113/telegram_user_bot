@@ -27,7 +27,7 @@ type ClickStore = {
 
 const STORAGE_KEY = "app_clicks_v1_meta";
 const QUEUE_KEY = "app_clicks_v1_queue";
-const ONE_DAY = 6 * 1000;
+// const ONE_DAY = 6 * 1000;
 
 /* -------------
   Module-level queue & timers (not stored in zustand state)

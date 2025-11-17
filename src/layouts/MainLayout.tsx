@@ -57,7 +57,7 @@ const MainLayout = () => {
       }
     };
 
-    const onBeforeUnload = (ev: BeforeUnloadEvent) => {
+    const onBeforeUnload = (_: BeforeUnloadEvent) => {
       // аналогичная попытка через sendBeacon
       onVisibility();
     };

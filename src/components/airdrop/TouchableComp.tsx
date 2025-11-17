@@ -8,7 +8,7 @@ const TouchableComp = () => {
   const avatarRef = useRef<HTMLImageElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const maxTotalLimit = useClickStore((s) => s.maxTotalLimit);
+  // const maxTotalLimit = useClickStore((s) => s.maxTotalLimit);
 
   // useEffect(() => {
   //   useClickStore
