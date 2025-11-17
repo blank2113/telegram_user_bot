@@ -3,15 +3,81 @@ import { Outlet } from "react-router-dom";
 import bg from "../assets/images/mainbg.webp";
 import UnAuthorizePage from "../pages/UnAuthorizePage";
 import Navigation from "../components/navigation/Navigation";
+import useClickStore from "../store/clickStore";
+import Header from "../components/header/Header";
+import useAuthStore from "../store/authStore";
 
 const MainLayout = () => {
   const [isMobile, setIsMobile] = useState<boolean>(false);
+  const setUser = useAuthStore((s) => s.setUser);
 
   useEffect(() => {
     const checkScreen = () => setIsMobile(window.innerWidth < 768);
     checkScreen();
     window.addEventListener("resize", checkScreen);
+    setUser({
+      id: 1,
+      telegram_id: 123213,
+      name: "Ivan Ivanov",
+      balance: 300,
+      level: 1,
+      status: "common",
+      img: null,
+      statusMaxEnergy: 100,
+    });
     return () => window.removeEventListener("resize", checkScreen);
+  }, []);
+
+  useEffect(() => {
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") {
+        // Попытка отправить синхронно: navigator.sendBeacon предпочтителен
+        const state = useClickStore.getState();
+        const pending = state.pending;
+        const endpoint = state.endpoint;
+        if (pending > 0 && endpoint) {
+          try {
+            const body = JSON.stringify({ clicks: pending, ts: Date.now() });
+            // sendBeacon возвращает true/false
+            const ok = navigator.sendBeacon(
+              endpoint,
+              new Blob([body], { type: "application/json" })
+            );
+            if (ok) {
+              // уменьшаем pending локально (если нужно)
+              // store уже дебагит повторные попытки; можно сбросить:
+              useClickStore.setState((s) => ({
+                pending: Math.max(0, s.pending - pending),
+              }));
+            }
+          } catch (e) {
+            // ничего — store попытается позже
+          }
+        }
+      }
+    };
+
+    const onBeforeUnload = (ev: BeforeUnloadEvent) => {
+      // аналогичная попытка через sendBeacon
+      onVisibility();
+    };
+
+    document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("beforeunload", onBeforeUnload);
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("beforeunload", onBeforeUnload);
+    };
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = useAuthStore.subscribe((state) => {
+      const max = state.user?.statusMaxEnergy ?? 100; // <-- через state.user
+      useClickStore.setState({ maxTotalLimit: max });
+    });
+
+    return () => unsubscribe();
   }, []);
 
   return (
@@ -26,6 +92,7 @@ const MainLayout = () => {
       {/* Контент */}
       {isMobile ? (
         <div className='h-full w-full flex flex-col items-center justify-center relative z-20'>
+          <Header />
           <Suspense
             fallback={
               <div className='w-full h-full flex items-center justify-center'>

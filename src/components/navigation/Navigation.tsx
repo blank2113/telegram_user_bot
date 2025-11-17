@@ -7,9 +7,9 @@ import icon4 from "../../assets/images/icon4.webp";
 import icon5 from "../../assets/images/icon5.webp";
 
 const links: Links[] = [
-  { id: 1, name: "Pul kiritish", link: "/", icon: icon1 },
+  { id: 1, name: "Pul kiritish", link: "/home", icon: icon1 },
   { id: 2, name: "O’yinlar", link: "/games", icon: icon2 },
-  { id: 3, name: "Airdrop", link: "/airdrop", icon: icon3 },
+  { id: 3, name: "Airdrop", link: "/", icon: icon3 },
   { id: 4, name: "Do’stlar", link: "/friends", icon: icon4 },
   { id: 5, name: "Sozlamalar", link: "/profile", icon: icon5 },
 ];

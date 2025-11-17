@@ -18,15 +18,15 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        Component: Home,
+        Component: Airdrop,
       },
       {
         path: "/games",
         Component: Games,
       },
       {
-        path: "/airdrop",
-        Component: Airdrop,
+        path: "/home",
+        Component: Home,
       },
       {
         path: "/friends",

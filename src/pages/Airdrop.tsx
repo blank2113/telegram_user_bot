@@ -4,6 +4,7 @@ import { useRef, useMemo } from "react";
 
 import coin from "../assets/images/coin.webp";
 import TouchableComp from "../components/airdrop/TouchableComp";
+import Progress from "../components/progress/Progress";
 
 const layers = [10, 8, 6];
 
@@ -28,7 +29,7 @@ export default function AirDrop() {
       ref={wrapRef}
       className='relative w-full h-full pt-2 space-y-4 flex-1 overflow-hidden pb-55 flex items-center justify-center'>
       {/* Прогресс бар */}
-      {/* <Progress value={valueRef.current} height={12} max={1000} /> */}
+      <Progress height={12} />
 
       {/* Монеты */}
       <div className='absolute inset-0 pointer-events-none z-10'>

@@ -1,29 +1,33 @@
 import coin from "../../assets/icons/coin.svg";
 import bell from "../../assets/icons/bell.svg";
-import avatar from "../../assets/icons/avatar.svg";
 import { token } from "./header.tokens";
 import { formatNumber } from "../../utils/formatedNumber";
 import { memo } from "react";
 import { Link } from "react-router-dom";
 import useNotifyStore from "../../store/notificationStore";
+import useAuthStore from "../../store/authStore";
+import CustomAvatar from "../ui/CustomAvatar";
 
 const Header = () => {
   const { count, reset } = useNotifyStore((s) => s);
+  const user = useAuthStore((s) => s.user);
 
   return (
     <header className='w-full px-3 relative flex items-center justify-between min-h-[60px] py-2 gap-5'>
       <div className={token.block}>
         <img src={coin} alt='coin' className='w-[30px] h-[30px]' />
-        <p className='text-white font-semibold'>{formatNumber(900)}</p>
+        <p className='text-white font-semibold'>
+          {formatNumber(Number(user?.balance || 0))}
+        </p>
       </div>
 
-      <div className='flex items-center justify-center gap-3'>
-        <img src={avatar} alt='' className='w-10 h-10' />
+      <Link to='/profile' className='flex items-center justify-center gap-3'>
+        <CustomAvatar img={user?.img} />
         <div className='flex flex-col gap-0.5 items-start justify-center'>
           <p
             className='text-white font-semibold max-w-[110px] truncate'
             title='JOV_UZB_777'>
-            JOV_UZB_777
+            {user?.name}
           </p>
 
           <p className='flex items-center justify-start gap-2'>
@@ -31,11 +35,11 @@ const Header = () => {
               LVL
             </span>
             <span className='bg-[#24E6F3] px-1.5 rounded-sm text-[12px]'>
-              4
+              {user?.level}
             </span>
           </p>
         </div>
-      </div>
+      </Link>
 
       <Link
         to={"/notification"}
@@ -49,7 +53,7 @@ const Header = () => {
 
         {count > 0 && (
           <span
-            className='absolute -top-1 -right-1 min-w-[20px] h-5 px-1.5 flex items-center justify-center text-[11px] font-semibold text-white bg-red-500 rounded-full shadow-md z-20'
+            className='absolute -top-1 -right-1 min-w-5 h-5 px-1.5 flex items-center justify-center text-[11px] font-semibold text-white bg-red-500 rounded-full shadow-md z-20'
             aria-hidden={false}>
             {count > 99 ? "99+" : count}
           </span>

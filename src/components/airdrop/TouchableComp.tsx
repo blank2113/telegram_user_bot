@@ -2,11 +2,19 @@ import { motion } from "framer-motion";
 import { useRef, useCallback } from "react";
 import touchAv from "../../assets/images/Touch.webp";
 import coin from "../../assets/images/coin.webp";
+import useClickStore from "../../store/clickStore";
 
 const TouchableComp = () => {
   const avatarRef = useRef<HTMLImageElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const maxTotalLimit = useClickStore((s) => s.maxTotalLimit);
+
+  // useEffect(() => {
+  //   useClickStore
+  //     .getState()
+  //     .init({ endpoint: "/api/clicks", idleMs: 2000, maxRetries: 3 });
+  // }, []);
 
   const handleTap = useCallback((e: React.MouseEvent) => {
     if (!avatarRef.current || !wrapperRef.current || !containerRef.current)
@@ -62,6 +70,7 @@ const TouchableComp = () => {
     };
     requestAnimationFrame(animate);
 
+    useClickStore.getState().registerClick(1);
     // scale аватара
     avatarRef.current.style.transform = "scale(1.1)";
     setTimeout(() => {
