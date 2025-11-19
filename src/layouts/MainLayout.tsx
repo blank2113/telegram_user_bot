@@ -11,6 +11,29 @@ const MainLayout = () => {
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const setUser = useAuthStore((s) => s.setUser);
 
+  // call this on app start
+  function syncTopOffset() {
+    // compute offset from visualViewport when available (more accurate on mobile)
+    const vv = (window as any).visualViewport;
+    const offset = vv ? Math.max(0, Math.round(vv.offsetTop || 0)) : 0;
+    document.documentElement.style.setProperty(
+      "--tg-top-offset",
+      `${offset}px`
+    );
+  }
+
+  // update on changes
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", syncTopOffset);
+    window.visualViewport.addEventListener("scroll", syncTopOffset);
+  }
+  window.addEventListener("resize", syncTopOffset);
+  window.addEventListener("orientationchange", syncTopOffset);
+  window.addEventListener("load", syncTopOffset);
+
+  // also run once immediately
+  syncTopOffset();
+
   useEffect(() => {
     const checkScreen = () => setIsMobile(window.innerWidth < 768);
     checkScreen();
