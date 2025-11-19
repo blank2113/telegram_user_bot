@@ -101,17 +101,7 @@ const FourtuneWheel: FC = () => {
             angle={angle}
             stroke="#F4C542"
             strokeWidth={2.5}
-            // shadowForStrokeEnabled
-            // fillRadialGradientStartPoint={{ x: 0, y: 0 }}
-            // fillRadialGradientStartRadius={0}
-            // fillRadialGradientEndPoint={{ x: 0, y: 0 }}
-            // fillRadialGradientEndRadius={150}
-            // fillRadialGradientColorStops={[0, "#e10fa3", 0.8, "#5900cb"]}
             fill={i % 2 === 0 ? '#1E3FBF' : '#2569FF'}
-            // fillPriority='radial-gradient'
-            // strokeLinearGradientStartPoint={{ x: 100, y: 0 }}
-            // strokeLinearGradientEndPoint={{ x: 150, y: 0 }}
-            // strokeLinearGradientColorStops={[0, "#5900cb", 1, "#e10fa3"]}
           />
           <Text
             text={label}
@@ -216,53 +206,18 @@ const FourtuneWheel: FC = () => {
                   {wedges}
 
                   <Circle
-                    // x={SCENE_CENTER_X}
-                    // y={SCENE_CENTER_Y}
                     radius={outerRadius}
                     fillEnabled={false}
                     stroke="rgba(0,0,0,0.3)"
                     strokeWidth={10}
                   />
                   <Ring
-                    // x={SCENE_CENTER_X}
-                    // y={SCENE_CENTER_Y}
                     innerRadius={innerRadius}
                     outerRadius={outerRadius}
-                    // fillLinearGradientStartPoint={}
-                    // fillLinearGradientEndPoint={}
-                    // fillLinearGradientColorStops={[0, 3A2CCF]}
-                    // fillRadialGradientStartPoint={{ x: 0, y: 0 }}
-                    // fillRadialGradientEndPoint={{ x: 0, y: 0 }}
-                    // fillRadialGradientStartRadius={innerRadius}
-                    // fillRadialGradientEndRadius={outerRadius}
-                    // fillRadialGradientColorStops={[
-                    //   0,
-                    //   '#5900cb', // center color
-                    //   1,
-                    //   '#e10fa3', // outer color
-                    // ]}
-                    // shadowBlur={10}
-                    // shadowColor='#F4C542'
                     fill="#3A2CCF"
-                    // stroke='#F4C542'
-                    // strokeWidth={2}
-                    // strokeLinearGradientStartPoint={{ x: -90, y: 0 }}
-                    // strokeLinearGradientEndPoint={{ x: 90, y: 0 }}
-                    // strokeLinearGradientColorStops={[
-                    //   0,
-                    //   '#4facfe',
-                    //   1,
-                    //   '#00f2fe',
-                    // ]}
-                    // stroke="#333"
-                    // strokeWidth={3}
                   />
 
                   <Shape
-                    // x={SCENE_CENTER_X}
-                    // y={SCENE_CENTER_Y}
-                    // shadowBlur={10}
-                    // shadowColor='blue'
                     sceneFunc={(ctx) => {
                       for (let a = 0; a < Math.PI * 2; a += 0.35) {
                         // точка в середине толщины кольца
@@ -281,22 +236,6 @@ const FourtuneWheel: FC = () => {
                     }}
                   />
                 </Group>
-
-                {/* <Circle
-                  x={SCENE_CENTER_X}
-                  y={SCENE_CENTER_Y}
-                  radius={outerRadius}
-                  fillEnabled={false}
-                  // Make the stroke invisible but keep it to cast a shadow:
-                  stroke="rgba(0,0,0,0)"
-                  strokeWidth={3}
-                  // Shadow shown only within the clip (i.e., inside the hole)
-                  shadowColor="black"
-                  shadowBlur={20}
-                  shadowOpacity={0.35}
-                  shadowOffset={{ x: 0, y: 4 }}
-                /> */}
-
                 <Circle
                   fillRadialGradientStartPoint={{ x: -40 * 0.3, y: -40 * 0.3 }}
                   fillRadialGradientStartRadius={0}
@@ -377,7 +316,6 @@ const FourtuneWheel: FC = () => {
                 />
               </div>
             </div>
-            {/* <button className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50"></button> */}
           </>
         </div>
       </div>
