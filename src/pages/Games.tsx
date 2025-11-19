@@ -4,12 +4,14 @@ import CustomButton from "../components/ui/CustomButton";
 import wheel from "../assets/images/wheel_bg.png";
 import coin from "../assets/images/coin.webp";
 import { useNavigate } from "react-router-dom";
+import Snowfall from "../components/ui/SnowFlake";
 
 const Games = () => {
   const navigate = useNavigate();
 
   return (
     <div className='w-full h-full relative z-10 pt-5 pb-34 px-3 flex flex-col items-center gap-5 overflow-y-scroll '>
+      <Snowfall />
       <CustomButton
         title='Status
 sotib olish'
