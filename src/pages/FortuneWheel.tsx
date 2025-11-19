@@ -3,8 +3,10 @@
 import { useEffect, useRef, useState, useMemo, type FC } from "react";
 import Konva from "konva";
 import { Stage, Layer, Group, Wedge, Text, Shape, Ring } from "react-konva";
-import CustomButton from "../components/ui/CustomButton";
-import CustomInput from "../components/ui/CustomInput";
+
+import NiceSelector from "../components/ui/NiceSelector";
+import NiceCoinInput from "../components/ui/NiceCoinInput";
+import PlayButton from "../components/ui/PlayButton";
 
 Konva.angleDeg = false;
 // const degToRad = (deg: number) => (deg * Math.PI) / 180;
@@ -171,8 +173,8 @@ const FourtuneWheel: FC = () => {
   };
 
   return (
-    <div className='flex items-center justify-center bg-transparent py-16 w-full h-full overflow-y-scroll'>
-      <div className='w-full max-w-md mx-4 rounded-2xl shadow-md py-4 px-1 bg-white/5 backdrop-blur-md  border border-white/10'>
+    <div className='flex items-center justify-center bg-transparent py-16 w-full '>
+      <div className='w-full max-w-md  rounded-2xl shadow-md py-4 px-2 bg-white/10 backdrop-blur-md  border border-[#24E6F3CC]'>
         <div
           ref={stageContainerRef}
           id='wheel-container'
@@ -267,17 +269,17 @@ const FourtuneWheel: FC = () => {
             </Stage>
 
             <div className='flex flex-col gap-6 w-full'>
-              <CustomInput pl='Qaysi son?' value='' onChange={console.log} />
-              <div className='flex gap-4'>
-                <CustomInput pl='Nechi pul?' value='' onChange={console.log} />
-                <CustomButton
-                  onClick={() => {
-                    getValueAndSpin();
-                  }}
-                  disabled={isSpinning}
-                  title={isSpinning ? "Aylanish..." : "O’ynash"}
-                  className='text-[12px] font-semibold'
-                />
+              <NiceSelector />
+
+              <div className='flex gap-4 flex-col'>
+                <NiceCoinInput />
+
+                <PlayButton
+                  className='w-full'
+                  isSpinning={isSpinning}
+                  onClick={getValueAndSpin}>
+                  O’ynash
+                </PlayButton>
               </div>
             </div>
             {/* <button className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50"></button> */}
