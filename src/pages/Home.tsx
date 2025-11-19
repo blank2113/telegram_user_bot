@@ -25,16 +25,12 @@ const Home = () => {
   // const handleClosePayment = useCallback(() => setPaymentStatusOpen(false), []);
 
   return (
-    <div className='px-3 pt-10 pb-35 h-svh relative z-1 flex flex-col items-center justify-center  w-full gap-4 overflow-hidden '>
+    <div className='px-3 pt-30 pb-35 h-svh relative z-1 flex flex-col items-center justify-center  w-full gap-4 overflow-y-scroll'>
       <AnimatedImage />
       <Snowfall />
-      <CustomButton
-        title='Pul chiqarish'
-        onClick={() => console.log(1)}
-        className='absolute top-4 right-3 text-[12px] font-medium'
-      />
-      <h1 className='text-center text-[30px]  text-white font-semibold leading-tight'>
-        Pul kiritish / yechib olish
+      <h1 className='text-center text-[25px]  text-white font-semibold leading-tight'>
+        Statusingizni yaxshilang. Limon va energiya zaxiralaringizni sotib
+        oling, soting va to‘ldirin
       </h1>
       <div className='w-full flex flex-col items-center justify-end gap-3'>
         <CustomBackground
