@@ -3,6 +3,7 @@ import ProfileName from "../components/profile/ProfileName";
 import CustomButton from "../components/ui/CustomButton";
 import tg from "../assets/icons/tg.svg";
 import ProfileStats from "../components/profile/ProfileStats";
+import Snowfall from "../components/ui/SnowFlake";
 
 const Profile = () => {
   const botUrl = `https://t.me/test_user_appp_bot?start=2`;
@@ -12,6 +13,7 @@ const Profile = () => {
 
   return (
     <div className='w-full h-full flex flex-col items-center py-5 relative  gap-5 overflow-y-scroll pb-35'>
+      <Snowfall />
       <ProfileImg />
       <ProfileName />
       <div className='w-full px-3 '>

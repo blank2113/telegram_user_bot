@@ -8,7 +8,7 @@ const Friends = lazy(() => import("./pages/Friends"));
 const Profile = lazy(() => import("./pages/Profile"));
 const InvitePage = lazy(() => import("./pages/InvitePage"));
 const NotificationPage = lazy(() => import("./pages/NotificationPage"));
-const FourtuneWheel = lazy(() => import("./pages/FortuneWheel"));
+const WheelPage = lazy(() => import("./pages/WheelPage"));
 const CoinFlip = lazy(() => import("./pages/FlipCoinPage"));
 
 const router = createBrowserRouter([
@@ -42,7 +42,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/wheel",
-        Component: FourtuneWheel,
+        Component: WheelPage,
       },
       {
         path: "/flip_coin",

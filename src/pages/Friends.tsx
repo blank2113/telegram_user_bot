@@ -5,11 +5,13 @@ import FriendsList from "../components/friends/FriendsList";
 import CustomPopup from "../components/ui/CustomPopup";
 import { useState } from "react";
 import TelegramLinkPopup from "../components/friends/TelegramLinkPopup";
+import Snowfall from "../components/ui/SnowFlake";
 
 const Friends = () => {
   const [open, setOpen] = useState<boolean>(false);
   return (
     <div className='w-full h-full flex flex-col items-center relative z-10 pt-10 overflow-y-scroll pb-40'>
+      <Snowfall />
       <AnimatedFriendsImage />
       <div className='flex flex-col items-center gap-2 py-5'>
         <h1 className='text-white text-4xl font-semibold'>Do’stlar</h1>
