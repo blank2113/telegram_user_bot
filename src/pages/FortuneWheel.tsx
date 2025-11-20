@@ -1,6 +1,6 @@
 // @ts-ignore
-import { useEffect, useRef, useState, useMemo, type FC } from 'react';
-import Konva from 'konva';
+import { useEffect, useRef, useState, useMemo, type FC } from "react";
+import Konva from "konva";
 import {
   Stage,
   Layer,
@@ -10,7 +10,7 @@ import {
   Shape,
   Ring,
   Circle,
-} from 'react-konva';
+} from "react-konva";
 import NiceSelector from "../components/ui/NiceSelector";
 import NiceCoinInput from "../components/ui/NiceCoinInput";
 import PlayButton from "../components/ui/PlayButton";
@@ -23,20 +23,20 @@ function normalizeAngle(a: number) {
 
 const WEDGES = [
   // { color: "#d0b1dd", label: "0" },
-  { color: '#c7a3d6', label: '1' },
-  { color: '#bf95d0', label: '2' },
-  { color: '#b687ca', label: '3' },
-  { color: '#ad78c4', label: '4' },
-  { color: '#a56abd', label: '5' },
-  { color: '#9c5cb7', label: '6' },
-  { color: '#944eb1', label: '7' },
-  { color: '#8848a3', label: '8' },
-  { color: '#7c4295', label: '9' },
-  { color: '#703b87', label: '10' },
-  { color: '#643578', label: '11' },
-  { color: '#592f6a', label: '12' },
-  { color: '#4d295c', label: '13' },
-  { color: '#41224e', label: '14' },
+  { color: "#c7a3d6", label: "1" },
+  { color: "#bf95d0", label: "2" },
+  { color: "#b687ca", label: "3" },
+  { color: "#ad78c4", label: "4" },
+  { color: "#a56abd", label: "5" },
+  { color: "#9c5cb7", label: "6" },
+  { color: "#944eb1", label: "7" },
+  { color: "#8848a3", label: "8" },
+  { color: "#7c4295", label: "9" },
+  { color: "#703b87", label: "10" },
+  { color: "#643578", label: "11" },
+  { color: "#592f6a", label: "12" },
+  { color: "#4d295c", label: "13" },
+  { color: "#41224e", label: "14" },
 ];
 
 const V_SCENE_WIDTH = 440;
@@ -78,10 +78,10 @@ const FourtuneWheel: FC = () => {
 
   useEffect(() => {
     updateSize();
-    window.addEventListener('resize', updateSize);
+    window.addEventListener("resize", updateSize);
 
     return () => {
-      window.removeEventListener('resize', updateSize);
+      window.removeEventListener("resize", updateSize);
     };
   }, []);
 
@@ -99,16 +99,16 @@ const FourtuneWheel: FC = () => {
           <Wedge
             radius={radius}
             angle={angle}
-            stroke="#F4C542"
+            stroke='#F4C542'
             strokeWidth={2.5}
-            fill={i % 2 === 0 ? '#1E3FBF' : '#2569FF'}
+            fill={i % 2 === 0 ? "#1E3FBF" : "#2569FF"}
           />
           <Text
             text={label}
             fontSize={24}
-            fontStyle="900"
-            fontFamily="Cherry Bomb One, sans-serif"
-            fill="white"
+            fontStyle='900'
+            fontFamily='Cherry Bomb One, sans-serif'
+            fill='white'
             rotation={angle / 2} //+ Math.PI / 2
             x={radius - radius * Math.tan(angle / 2)}
             y={ty}
@@ -116,7 +116,7 @@ const FourtuneWheel: FC = () => {
             offsetY={5}
             listening={false}
             shadowBlur={4}
-            shadowColor="#000"
+            shadowColor='#000'
             fillAfterStrokeEnabled
           />
         </Group>
@@ -171,138 +171,143 @@ const FourtuneWheel: FC = () => {
 
   const getValueAndSpin = () => {
     const value = Math.floor(Math.random() * WEDGES.length);
-    console.log('DEBUG: Target value - ', value);
+    console.log("DEBUG: Target value - ", value);
     spinTo(value);
   };
 
   return (
-    <div className='flex items-center justify-center bg-transparent py-16 w-full '>
-      <div className='w-full max-w-md  rounded-2xl shadow-md py-4 px-2 bg-white/10 backdrop-blur-md  border border-[#24E6F3CC]'>
+    <div className='flex items-center justify-center bg-transparent w-full '>
+      <div className='w-full max-w-md  rounded-2xl shadow-md py-4 px-2 bg-white/10 backdrop-blur-md  border border-[#24E6F3CC] relative'>
         <div
           ref={stageContainerRef}
-          id="wheel-container"
-          className="wheel-container flex flex-col justify-center items-center"
+          id='wheel-container'
+          className='wheel-container flex flex-col justify-center items-center'
           style={{
-            position: 'relative',
-            width: '100%',
-            height: '100%',
-          }}
-        >
+            position: "relative",
+            width: "100%",
+            height: "100%",
+          }}>
           <>
-            <Stage
-              ref={stageRef}
-              width={stageSize.width}
-              height={stageSize.height}
-              scaleX={stageSize.scale}
-              scaleY={stageSize.scale}
-            >
-              <Layer ref={layerRef} listening={false}>
-                <Group
-                  ref={wheelRef}
-                  rotation={0}
-                  x={SCENE_CENTER_X}
-                  y={SCENE_CENTER_Y}
-                >
-                  {wedges}
+            <div className='h-43 overflow-hidden w-full'>
+              <Stage
+                ref={stageRef}
+                width={stageSize.width}
+                height={stageSize.height}
+                scaleX={stageSize.scale}
+                scaleY={stageSize.scale}>
+                <Layer ref={layerRef} listening={false}>
+                  <Group
+                    ref={wheelRef}
+                    rotation={0}
+                    x={SCENE_CENTER_X}
+                    y={SCENE_CENTER_Y}>
+                    {wedges}
+
+                    <Circle
+                      radius={outerRadius}
+                      fillEnabled={false}
+                      stroke='rgba(0,0,0,0.3)'
+                      strokeWidth={10}
+                    />
+                    <Ring
+                      innerRadius={innerRadius}
+                      outerRadius={outerRadius}
+                      fill='#3A2CCF'
+                    />
+
+                    <Shape
+                      sceneFunc={(ctx) => {
+                        for (let a = 0; a < Math.PI * 2; a += 0.35) {
+                          // точка в середине толщины кольца
+                          const x =
+                            Math.cos(a) *
+                            (innerRadius + (outerRadius - innerRadius) / 2);
+                          const y =
+                            Math.sin(a) *
+                            (innerRadius + (outerRadius - innerRadius) / 2);
+
+                          ctx.beginPath();
+                          ctx.fillStyle = "#fff";
+                          ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+                          ctx.fill();
+                        }
+                      }}
+                    />
+                  </Group>
+                  <Circle
+                    fillRadialGradientStartPoint={{
+                      x: -40 * 0.3,
+                      y: -40 * 0.3,
+                    }}
+                    fillRadialGradientStartRadius={0}
+                    fillRadialGradientEndPoint={{ x: 0, y: 0 }}
+                    fillRadialGradientEndRadius={40}
+                    fillRadialGradientColorStops={[
+                      0,
+                      "rgba(255,255,255,0.9)", // bright specular highlight
+                      0.25,
+                      "#FFE38C", // light tone
+                      0.7,
+                      "#F4C542", // mid-dark tone
+                      1,
+                      "#D6A12D", // darkest rim
+                    ]}
+                    shadowColor={"black"}
+                    shadowBlur={20}
+                    shadowOpacity={0.25}
+                    shadowOffset={{ x: 6, y: 8 }}
+                    // fill={'blue'}
+                    x={SCENE_CENTER_X}
+                    y={SCENE_CENTER_Y}
+                    radius={40}
+                    stroke={"rgba(0,0,0,0.2)"}
+                    strokeWidth={1}
+                  />
 
                   <Circle
-                    radius={outerRadius}
-                    fillEnabled={false}
-                    stroke="rgba(0,0,0,0.3)"
-                    strokeWidth={10}
-                  />
-                  <Ring
-                    innerRadius={innerRadius}
-                    outerRadius={outerRadius}
-                    fill="#3A2CCF"
-                  />
-
-                  <Shape
-                    sceneFunc={(ctx) => {
-                      for (let a = 0; a < Math.PI * 2; a += 0.35) {
-                        // точка в середине толщины кольца
-                        const x =
-                          Math.cos(a) *
-                          (innerRadius + (outerRadius - innerRadius) / 2);
-                        const y =
-                          Math.sin(a) *
-                          (innerRadius + (outerRadius - innerRadius) / 2);
-
-                        ctx.beginPath();
-                        ctx.fillStyle = '#fff';
-                        ctx.arc(x, y, 3.5, 0, Math.PI * 2);
-                        ctx.fill();
-                      }
+                    fillRadialGradientStartPoint={{
+                      x: -25 * 0.3,
+                      y: -25 * 0.3,
                     }}
+                    fillRadialGradientStartRadius={0}
+                    fillRadialGradientEndPoint={{ x: 0, y: 0 }}
+                    fillRadialGradientEndRadius={25}
+                    fillRadialGradientColorStops={[
+                      0.0,
+                      "#FFE38C", // light tone
+                      0.7,
+                      "#F4C542", // mid-dark tone
+                      1,
+                      "#D6A12D", // darkest rim
+                    ]}
+                    shadowColor={"black"}
+                    shadowBlur={20}
+                    shadowOpacity={0.25}
+                    shadowOffset={{ x: 6, y: 8 }}
+                    // fill={'blue'}
+                    x={SCENE_CENTER_X}
+                    y={SCENE_CENTER_Y}
+                    radius={25}
+                    stroke={"rgba(0,0,0,0.2)"}
+                    strokeWidth={1}
                   />
-                </Group>
-                <Circle
-                  fillRadialGradientStartPoint={{ x: -40 * 0.3, y: -40 * 0.3 }}
-                  fillRadialGradientStartRadius={0}
-                  fillRadialGradientEndPoint={{ x: 0, y: 0 }}
-                  fillRadialGradientEndRadius={40}
-                  fillRadialGradientColorStops={[
-                    0,
-                    'rgba(255,255,255,0.9)', // bright specular highlight
-                    0.25,
-                    '#FFE38C', // light tone
-                    0.7,
-                    '#F4C542', // mid-dark tone
-                    1,
-                    '#D6A12D', // darkest rim
-                  ]}
-                  shadowColor={'black'}
-                  shadowBlur={20}
-                  shadowOpacity={0.25}
-                  shadowOffset={{ x: 6, y: 8 }}
-                  // fill={'blue'}
-                  x={SCENE_CENTER_X}
-                  y={SCENE_CENTER_Y}
-                  radius={40}
-                  stroke={'rgba(0,0,0,0.2)'}
-                  strokeWidth={1}
-                />
+                  <Wedge
+                    ref={pointerRef}
+                    fill={"#FFE38C"}
+                    angle={0.9}
+                    radius={45}
+                    x={SCENE_CENTER_X}
+                    y={V_SCENE_HEIGHT - V_SCENE_HEIGHT * 0.88}
+                    rotation={-Math.PI / 2 - 0.45}
+                    stroke={"#D6A12D"}
+                    shadowBlur={10}
+                    shadowColor='#FFE38C'
+                  />
+                </Layer>
+              </Stage>
+            </div>
 
-                <Circle
-                  fillRadialGradientStartPoint={{ x: -25 * 0.3, y: -25 * 0.3 }}
-                  fillRadialGradientStartRadius={0}
-                  fillRadialGradientEndPoint={{ x: 0, y: 0 }}
-                  fillRadialGradientEndRadius={25}
-                  fillRadialGradientColorStops={[
-                    0.0,
-                    '#FFE38C', // light tone
-                    0.7,
-                    '#F4C542', // mid-dark tone
-                    1,
-                    '#D6A12D', // darkest rim
-                  ]}
-                  shadowColor={'black'}
-                  shadowBlur={20}
-                  shadowOpacity={0.25}
-                  shadowOffset={{ x: 6, y: 8 }}
-                  // fill={'blue'}
-                  x={SCENE_CENTER_X}
-                  y={SCENE_CENTER_Y}
-                  radius={25}
-                  stroke={'rgba(0,0,0,0.2)'}
-                  strokeWidth={1}
-                />
-                <Wedge
-                  ref={pointerRef}
-                  fill={'#FFE38C'}
-                  angle={0.9}
-                  radius={45}
-                  x={SCENE_CENTER_X}
-                  y={V_SCENE_HEIGHT - V_SCENE_HEIGHT * 0.88}
-                  rotation={-Math.PI / 2 - 0.45}
-                  stroke={'#D6A12D'}
-                  shadowBlur={10}
-                  shadowColor="#FFE38C"
-                />
-              </Layer>
-            </Stage>
-
-            <div className='flex flex-col gap-6 w-full'>
+            <div className='flex flex-col gap-6 w-full '>
               <NiceSelector />
 
               <div className='flex gap-4 flex-col'>

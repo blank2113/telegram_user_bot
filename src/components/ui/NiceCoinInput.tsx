@@ -118,7 +118,7 @@ export default function NiceCoinInput({
 
   return (
     <div className={`w-full max-w-md mx-auto ${className}`}>
-      <label className='block text-[18px] bg-purple-700 text-white rounded-md mb-2 font-semibold text-center py-1'>
+      <label className='block text-[16px] bg-purple-700 text-white rounded-md mb-2 font-semibold text-center py-1'>
         Tikish (monet)
       </label>
 
@@ -127,7 +127,7 @@ export default function NiceCoinInput({
           type='button'
           aria-label={`kamaytir ${step}`}
           onClick={() => changeBy(-step)}
-          className='text-white text-3xl inline-flex items-center justify-center rounded-md px-4 py-2 bg-white/45 active:bg-white/30 transition focus:outline-none border-2 border-[#24E6F3CC]'>
+          className='text-white text-xl inline-flex items-center justify-center rounded-md px-4 py-2 bg-white/45 active:bg-white/30 transition focus:outline-none border-2 border-[#24E6F3CC]'>
           −
         </button>
 
@@ -142,7 +142,7 @@ export default function NiceCoinInput({
             aria-invalid={!!error}
             aria-describedby={error ? "coin-error" : undefined}
             placeholder={placeholder}
-            className={`w-full bg-linear-to-r from-white/20 to-white/50 placeholder-white/90 text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/20 transition shadow-sm`}
+            className={`w-full bg-linear-to-r text-xl from-white/20 to-white/50 placeholder-white/90 text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/20 transition shadow-sm`}
             style={{
               fontVariantNumeric: "tabular-nums",
               textAlign: "center",
@@ -155,7 +155,7 @@ export default function NiceCoinInput({
           type='button'
           aria-label={`ko'paytir ${step}`}
           onClick={() => changeBy(step)}
-          className='text-white text-3xl inline-flex items-center justify-center rounded-md px-4 py-2 bg-white/45 active:bg-white/30 transition focus:outline-none border-2 border-[#24E6F3CC]'>
+          className='text-white text-xl inline-flex items-center justify-center rounded-md px-4 py-2 bg-white/45 active:bg-white/30 transition focus:outline-none border-2 border-[#24E6F3CC]'>
           +
         </button>
       </div>
@@ -166,7 +166,7 @@ export default function NiceCoinInput({
             key={p}
             type='button'
             onClick={() => handlePreset(p)}
-            className='px-3 py-1.5 rounded-full text-sm font-medium bg-white/50 hover:bg-white/12 transition text-white/90'>
+            className='px-3 py-1.5 rounded-3xl text-md font-medium bg-white/50 hover:bg-white/12 transition text-white/90'>
             {p}
           </button>
         ))}

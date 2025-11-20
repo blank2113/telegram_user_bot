@@ -52,7 +52,7 @@ export default function NiceSelector({
 
   return (
     <div
-      className={`flex items-center flex-wrap gap-3 justify-center ${className}`}>
+      className={`flex items-center flex-wrap gap-2 justify-center ${className} pt-3`}>
       {Array.from({ length: count }).map((_, idx) => {
         const n = idx + 1;
         const isSelected = selected === n;
@@ -108,7 +108,7 @@ export default function NiceSelector({
                       : "rgba(239,68,68,0.16)"
                   }`
                 : undefined,
-              minWidth: 48,
+              minWidth: 40,
               minHeight: 40,
             }}>
             {/* animated border/glow ring for selected */}
