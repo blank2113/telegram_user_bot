@@ -1,27 +1,30 @@
 import { create } from "zustand";
+import type { NotificationPayload } from "../types/notification";
 
-type NotifyStore = {
+interface NotifyState {
+  unread: NotificationPayload[];
   count: number;
-  setCount: (n: number) => void;
-  increment: (by?: number) => void;
+  setUnread: (arr: NotificationPayload[]) => void;
+  add: (payload: NotificationPayload) => void;
+  markRead: (ids: string[]) => void;
   reset: () => void;
-  unreadIds: number[];
-  setUnreadIds: (ids: number[]) => void;
-  markRead: (id: number) => void;
-};
+}
 
-const useNotifyStore = create<NotifyStore>((set) => ({
+const useNotifyStore = create<NotifyState>((set) => ({
+  unread: [],
   count: 0,
-  setCount: (n) => set({ count: n }),
-  increment: (by = 1) => set((s) => ({ count: s.count + by })),
-  reset: () => set({ count: 0, unreadIds: [] }),
-  unreadIds: [],
-  setUnreadIds: (ids) => set({ unreadIds: ids, count: ids.length }),
-  markRead: (id) =>
-    set((s) => {
-      const ids = s.unreadIds.filter((x) => x !== id);
-      return { unreadIds: ids, count: ids.length };
-    }),
+  setUnread: (arr) => set({ unread: arr, count: arr.length }),
+  add: (payload) =>
+    set((state) => ({
+      unread: [payload, ...state.unread],
+      count: state.count + 1,
+    })),
+  markRead: (ids: string[]) =>
+    set((state) => ({
+      unread: state.unread.filter((n) => !ids.includes(n.id)),
+      count: state.unread.filter((n) => !ids.includes(n.id)).length,
+    })),
+  reset: () => set({ unread: [], count: 0 }),
 }));
 
 export default useNotifyStore;

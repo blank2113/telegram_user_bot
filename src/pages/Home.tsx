@@ -28,7 +28,7 @@ const Home = () => {
   // const handleClosePayment = useCallback(() => setPaymentStatusOpen(false), []);
 
   return (
-    <div className='px-3 pt-30 pb-35 h-svh relative z-1 flex flex-col items-center justify-center  w-full gap-4 overflow-y-scroll'>
+    <div className='px-3 pt-10 pb-35 h-svh relative z-1  w-full gap-4 overflow-y-scroll'>
       <AnimatedImage />
       <Snowfall />
       <h1 className='text-center text-[25px]  text-white font-semibold leading-tight'>

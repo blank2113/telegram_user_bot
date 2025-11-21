@@ -5,6 +5,7 @@ import bg from "../assets/images/mainbg.webp";
 
 const NotificationPage = () => {
   const router = useNavigate();
+
   return (
     <div
       className='w-full h-svh text-white px-3  flex flex-col gap-5 overflow-y-scroll relative'

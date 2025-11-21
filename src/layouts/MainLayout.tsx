@@ -16,7 +16,7 @@ const MainLayout = () => {
     checkScreen();
     window.addEventListener("resize", checkScreen);
     setUser({
-      id: 1,
+      id: 2,
       telegram_id: 123213,
       name: "Ivan Ivanov",
       balance: 300,

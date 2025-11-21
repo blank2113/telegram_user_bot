@@ -7,10 +7,14 @@ import { Link } from "react-router-dom";
 import useNotifyStore from "../../store/notificationStore";
 import useAuthStore from "../../store/authStore";
 import CustomAvatar from "../ui/CustomAvatar";
+import { useNotifications } from "../../utils/useNotifications";
 
 const Header = () => {
   const { count, reset } = useNotifyStore((s) => s);
   const user = useAuthStore((s) => s.user);
+
+  // подключаем SSE
+  useNotifications(String(user?.id) || "2");
 
   return (
     <header className='w-full px-3 relative flex items-center justify-between min-h-[60px] py-2 gap-5'>
