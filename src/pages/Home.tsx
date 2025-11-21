@@ -7,9 +7,12 @@ import useStatusPaymentStore from "../store/statusPayment";
 import StatusPayment from "../components/home/StatusPayment";
 import PaymentStatusAlert from "../components/home/PaymentStatusAlert";
 import AnimatedImage from "../components/home/AnimatedImage";
-import AnimatedLight from "../components/home/AnimatedLight";
-import AnimatedCoin from "../components/home/AnimatedCoin";
+
+import vip from "../assets/images/vip (1).png";
 import Snowfall from "../components/ui/SnowFlake";
+import purse from "../assets/images/purse.png";
+import money from "../assets/images/money-stack.png";
+import bonus from "../assets/images/gift.png";
 
 const StatusMenuMemo = React.memo(StatusMenu);
 const StatusPaymentMemo = React.memo(StatusPayment);
@@ -29,13 +32,12 @@ const Home = () => {
       <AnimatedImage />
       <Snowfall />
       <h1 className='text-center text-[25px]  text-white font-semibold leading-tight'>
-        Statusingizni yaxshilang. Limon va energiya zaxiralaringizni sotib
-        oling, soting va to‘ldirin
+        Statusizni yaxshilang. Bonus oling. Pulni kiriting va echib oling
       </h1>
       <div className='w-full flex flex-col items-center justify-end gap-3'>
         <CustomBackground
-          title='Status sotib olish'
-          img={<AnimatedLight className='absolute -top-5.5 -left-2' />}
+          title='Status yaxshilash'
+          img={<img src={vip} className='w-[50px] h-[50px]' />}
           btn={
             <CustomButton
               title='Davom etish'
@@ -45,8 +47,32 @@ const Home = () => {
           }
         />
         <CustomBackground
-          title='Limon sotib olish'
-          img={<AnimatedCoin className='absolute -top-4 -left-1' />}
+          title='Balans echib olish'
+          img={<img src={purse} className=' w-[50px] h-[50px]' />}
+          className='absolute left-2 bottom-1'
+          btn={
+            <CustomButton
+              title='Davom etish'
+              onClick={() => console.log(1)}
+              className='text-[12px] font-medium'
+            />
+          }
+        />
+        <CustomBackground
+          title='Balans to’ldirish'
+          img={<img src={money} className='w-[55px] h-[55px]' />}
+          className='absolute left-2 bottom-1'
+          btn={
+            <CustomButton
+              title='Davom etish'
+              onClick={() => console.log(1)}
+              className='text-[12px] font-medium'
+            />
+          }
+        />
+        <CustomBackground
+          title='Bonus oyinlari'
+          img={<img src={bonus} alt='' className='w-[50px] h-[50px]' />}
           className='absolute left-2 bottom-1'
           btn={
             <CustomButton
