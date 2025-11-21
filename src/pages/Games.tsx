@@ -12,24 +12,14 @@ const Games = () => {
   return (
     <div className='w-full h-full relative z-10 pt-5 pb-34 px-3 flex flex-col items-center gap-5 overflow-y-scroll '>
       <Snowfall />
-      <CustomButton
-        title='Status
-sotib olish'
-        className='text-[10px] font-semibold absolute top-2 right-3 '
-      />
+
       <GamesAnimatedImage />
       <div className='w-full'>
         <h1 className='text-white font-bold text-[35px] text-center'>
-          O’yinlar
+          O‘ynang. Bonuslar oling va pul ishlang.
         </h1>
-        <p className='text-center  font-medium text-[18px] text-gray-300'>
-          Kundalik mukofot olish uchun bosing.
-        </p>
       </div>
-      <div className='flex items-center w-full justify-between pb-5 pt-10'>
-        <CustomButton title='Avtokliker' className='text-[12px] font-medium ' />
-        <CustomButton title='Booster' className='text-[12px] font-medium' />
-      </div>
+
       <CustomBackground
         title="Tikish g'ildiragi"
         btn={

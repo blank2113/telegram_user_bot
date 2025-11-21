@@ -14,12 +14,12 @@ const Header = () => {
 
   return (
     <header className='w-full px-3 relative flex items-center justify-between min-h-[60px] py-2 gap-5'>
-      <div className={token.block}>
+      <Link to={"/home"} className={token.block}>
         <img src={coin} alt='coin' className='w-[30px] h-[30px]' />
         <p className='text-white font-semibold'>
           {formatNumber(Number(user?.balance || 0))}
         </p>
-      </div>
+      </Link>
 
       <Link to='/profile' className='flex items-center justify-center gap-3'>
         <CustomAvatar img={user?.img} />
