@@ -110,7 +110,7 @@ const MainLayout = () => {
                 <p className='text-white text-4xl font-semibold'>Loading...</p>
               </div>
             }>
-            <p>{start}</p>
+            <p>Id:{start}</p>
             <Outlet />
           </Suspense>
           <Navigation />
