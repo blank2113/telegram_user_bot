@@ -8,8 +8,8 @@ type Props = {
 
 export default function Progress({ height = 10 }: Props) {
   const value = useClickStore((s) => s.total);
-  const maxTotalLimit = useClickStore((s) => s.maxTotalLimit);
-  const safeMax = Math.max(1, Number(maxTotalLimit)); // защита от 0/отрицательных
+  const maxTotalLimit = 1000;
+  const safeMax = Math.max(1, Number(maxTotalLimit));
   const clamped = Math.max(0, Math.min(safeMax, value));
   const pct = (clamped / safeMax) * 100;
 

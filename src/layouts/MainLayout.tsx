@@ -1,4 +1,4 @@
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useRef } from "react";
 import { Outlet } from "react-router-dom";
 import bg from "../assets/images/mainbg.webp";
 import UnAuthorizePage from "../pages/UnAuthorizePage";
@@ -6,61 +6,82 @@ import Navigation from "../components/navigation/Navigation";
 import useClickStore from "../store/clickStore";
 import Header from "../components/header/Header";
 import useAuthStore from "../store/authStore";
+import { scheduleResetFor } from "../utils/scheduleResetFor";
 
 const MainLayout = () => {
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const setUser = useAuthStore((s) => s.setUser);
+  const user = useAuthStore((s) => s.user);
+  const resetCleanupRef = useRef<() => void>(() => {});
+
+  // --- Fetch user по id ---
+  const fetchUser = async () => {
+    try {
+      // const userId = 12345;
+      const res = await fetch(`http://localhost:3000/api/users/profile/12345`);
+      if (!res.ok) {
+        console.error("Ошибка получения пользователя:", res.statusText);
+        return;
+      }
+      const data = await res.json();
+
+      if (data) {
+        setUser(data);
+      }
+    } catch (err) {
+      console.error("Ошибка при запросе пользователя:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  useEffect(() => {
+    resetCleanupRef.current?.();
+
+    if (user?.id) {
+      resetCleanupRef.current = scheduleResetFor(user?.id, user.maxTotalLimit);
+    }
+
+    return () => {
+      resetCleanupRef.current?.();
+    };
+  }, [user?.id, user?.maxTotalLimit]);
 
   useEffect(() => {
     const checkScreen = () => setIsMobile(window.innerWidth < 768);
     checkScreen();
     window.addEventListener("resize", checkScreen);
-    setUser({
-      id: 2,
-      telegram_id: 123213,
-      name: "Ivan Ivanov",
-      balance: 300,
-      level: 1,
-      status: "common",
-      img: null,
-      statusMaxEnergy: 100,
-    });
+
     return () => window.removeEventListener("resize", checkScreen);
   }, []);
 
+  // --- Сохраняем клики при уходе со страницы ---
   useEffect(() => {
     const onVisibility = () => {
       if (document.visibilityState === "hidden") {
-        // Попытка отправить синхронно: navigator.sendBeacon предпочтителен
         const state = useClickStore.getState();
         const pending = state.pending;
         const endpoint = state.endpoint;
         if (pending > 0 && endpoint) {
           try {
             const body = JSON.stringify({ clicks: pending, ts: Date.now() });
-            // sendBeacon возвращает true/false
             const ok = navigator.sendBeacon(
               endpoint,
               new Blob([body], { type: "application/json" })
             );
             if (ok) {
-              // уменьшаем pending локально (если нужно)
-              // store уже дебагит повторные попытки; можно сбросить:
               useClickStore.setState((s) => ({
                 pending: Math.max(0, s.pending - pending),
               }));
             }
-          } catch (e) {
-            // ничего — store попытается позже
-          }
+          } catch {}
         }
       }
     };
 
-    const onBeforeUnload = (_: BeforeUnloadEvent) => {
-      // аналогичная попытка через sendBeacon
-      onVisibility();
-    };
+    const onBeforeUnload = (_: BeforeUnloadEvent) => onVisibility();
 
     document.addEventListener("visibilitychange", onVisibility);
     window.addEventListener("beforeunload", onBeforeUnload);
@@ -71,25 +92,14 @@ const MainLayout = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const unsubscribe = useAuthStore.subscribe((state) => {
-      const max = state.user?.statusMaxEnergy ?? 100; // <-- через state.user
-      useClickStore.setState({ maxTotalLimit: max });
-    });
-
-    return () => unsubscribe();
-  }, []);
-
   return (
     <main
       className='min-h-screen w-screen h-svh flex flex-col items-center justify-center relative overflow-hidden'
       style={{
         background: `url(${bg}) no-repeat center center / cover`,
       }}>
-      {/* Градиент */}
       <div className='absolute inset-0 bg-linear-to-b opacity-45 from-[#09152A] to-[#67C5F8]' />
 
-      {/* Контент */}
       {isMobile ? (
         <div className='h-full w-full flex flex-col items-center justify-center relative z-20'>
           <Header />

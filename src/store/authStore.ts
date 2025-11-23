@@ -8,8 +8,8 @@ export type User = {
   balance?: number;
   status?: string | null;
   level?: number;
-  img?: string | null;
-  statusMaxEnergy?: number;
+  avatar?: string | null;
+  maxTotalLimit?: string | null;
 };
 
 type AuthState = {
@@ -128,7 +128,7 @@ const useAuthStore = create<AuthState>()(
     }),
     {
       name: "auth-storage-session",
-      storage: createJSONStorage(() => sessionStorage),
+      storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ user_id: state.user_id, user: state.user }),
     }
   )

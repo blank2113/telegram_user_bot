@@ -13,8 +13,7 @@ const Header = () => {
   const { count, reset } = useNotifyStore((s) => s);
   const user = useAuthStore((s) => s.user);
 
-  // подключаем SSE
-  useNotifications(String(user?.id) || "2");
+  useNotifications("2");
 
   return (
     <header className='w-full px-3 relative flex items-center justify-between min-h-[60px] py-2 gap-5'>
@@ -26,21 +25,12 @@ const Header = () => {
       </Link>
 
       <Link to='/profile' className='flex items-center justify-center gap-3'>
-        <CustomAvatar img={user?.img} />
+        <CustomAvatar img={`http://localhost:3000${user?.avatar}`} />
         <div className='flex flex-col gap-0.5 items-start justify-center'>
           <p
             className='text-white font-semibold max-w-[110px] truncate'
             title='JOV_UZB_777'>
             {user?.name}
-          </p>
-
-          <p className='flex items-center justify-start gap-2'>
-            <span className='text-[#FFFFFF] text-[10px] font-semibold'>
-              LVL
-            </span>
-            <span className='bg-[#24E6F3] px-1.5 rounded-sm text-[12px]'>
-              {user?.level}
-            </span>
           </p>
         </div>
       </Link>

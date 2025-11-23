@@ -1,25 +1,57 @@
 import { useState, useRef, useEffect } from "react";
 import { FaRegEdit, FaCheck, FaTimes } from "react-icons/fa";
+import useAuthStore from "../../store/authStore";
 
 const ProfileName = () => {
   const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState("JOV_UZB_777");
-  const [tempName, setTempName] = useState(name);
+  const user = useAuthStore((s) => s.user);
+  const setUser = useAuthStore((s) => s.setUser);
+  const [tempName, setTempName] = useState(user?.name || "Blanked");
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isEditing) inputRef.current?.focus();
   }, [isEditing]);
 
-  const handleSave = () => {
-    setName(tempName);
+  useEffect(() => {
+    // Если user обновился из стора — синхронизируем tempName
+    setTempName(user?.name || "Blanked");
+  }, [user?.name]);
+
+  const handleSave = async () => {
+    if (!tempName.trim()) {
+      alert("Имя не может быть пустым");
+      return;
+    }
+
     setIsEditing(false);
-    console.log("Saved name:", tempName);
-    // здесь можно вызвать API для сохранения на сервере
+
+    try {
+      const formData = new FormData();
+      formData.append("name", tempName.trim());
+
+      const res = await fetch(`http://localhost:3000/api/users/${user?.id}`, {
+        method: "PUT",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error("Ошибка обновления пользователя:", data);
+        alert(data.message || "Ошибка при обновлении");
+      } else {
+        console.log("Пользователь обновлён:", data);
+        setUser(data.user); // обновляем глобальный стор
+      }
+    } catch (err) {
+      console.error("Ошибка при отправке:", err);
+      alert("Ошибка при отправке запроса");
+    }
   };
 
   const handleCancel = () => {
-    setTempName(name);
+    setTempName(user?.name || "Blanked");
     setIsEditing(false);
   };
 
@@ -41,7 +73,7 @@ const ProfileName = () => {
           />
         ) : (
           <p className='text-white text-[22px] transition-all duration-300'>
-            {name}
+            {user?.name || "Blanked"}
           </p>
         )}
       </div>
@@ -51,12 +83,12 @@ const ProfileName = () => {
           <>
             <button
               onClick={handleSave}
-              className='flex items-center gap-1 bg-[#24E6F3] text-black p-3  rounded-full hover:bg-[#1fc3d8] transition-all active:scale-95'>
+              className='flex items-center gap-1 bg-[#24E6F3] text-black p-3 rounded-full hover:bg-[#1fc3d8] transition-all active:scale-95'>
               <FaCheck />
             </button>
             <button
               onClick={handleCancel}
-              className='flex items-center gap-1 bg-gray-600 text-white p-3  rounded-full hover:bg-gray-500 transition-all active:scale-95'>
+              className='flex items-center gap-1 bg-gray-600 text-white p-3 rounded-full hover:bg-gray-500 transition-all active:scale-95'>
               <FaTimes />
             </button>
           </>

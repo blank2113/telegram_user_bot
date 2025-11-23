@@ -8,6 +8,7 @@ type ClickStore = {
   pending: number; // клики, ожидающие отправки
   isSending: boolean;
   lastReset: number;
+  limitMarked: boolean;
   maxTotalLimit: number;
   // config
   idleMs: number;
@@ -27,7 +28,6 @@ type ClickStore = {
 
 const STORAGE_KEY = "app_clicks_v1_meta";
 const QUEUE_KEY = "app_clicks_v1_queue";
-// const ONE_DAY = 6 * 1000;
 
 /* -------------
   Module-level queue & timers (not stored in zustand state)
@@ -204,8 +204,9 @@ const useClickStore = create<ClickStore>()(
   persist(
     (set, get) => ({
       total: 0,
-      maxTotalLimit: 0,
+      maxTotalLimit: 1000,
       pending: queueSum(),
+      limitMarked: false,
       lastReset: Date.now(),
       isSending: false,
       idleMs: 1000,
@@ -279,18 +280,24 @@ const useClickStore = create<ClickStore>()(
           }
         });
       },
-
       registerClick(count = 1) {
         if (count <= 0) return;
 
+        const state = get();
+        const limit = 1000;
+        const remaining = limit - state.total;
+        if (remaining <= 0) return; // достигли лимита
+
+        const allowed = Math.min(count, remaining);
+
         // добавляем в очередь
-        const item: QueueItem = { id: randId(), clicks: count, ts: now() };
+        const item: QueueItem = { id: randId(), clicks: allowed, ts: now() };
         pushToQueue(item);
 
         // обновляем UI state: total, pending
         set((s) => {
-          const newTotal = s.total + count;
-          const newPending = s.pending + count;
+          const newTotal = s.total + allowed;
+          const newPending = s.pending + allowed;
 
           try {
             localStorage.setItem(
@@ -301,18 +308,59 @@ const useClickStore = create<ClickStore>()(
             console.log(e);
           }
 
-          // обновляем баланс пользователя в authStore
+          // обновляем баланс пользователя
           const incrementBalance = useAuthStore.getState().incrementBalance;
-          incrementBalance(count); // или count * стоимость за клик
+          incrementBalance(allowed);
 
           return { total: newTotal, pending: newPending };
         });
 
+        // если достигли лимита и ещё не отмечали на бекенде
+        if (get().total >= limit && !get().limitMarked) {
+          set({ limitMarked: true }); // ставим флаг, чтобы не отправлять повторно
+
+          (async () => {
+            try {
+              const user = useAuthStore.getState().user;
+              const userId = user?.id;
+              if (!userId) {
+                set({ limitMarked: false });
+                return;
+              }
+
+              const res = await fetch(
+                `http://localhost:3000/api/clicks/maxLimit/${userId}`,
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ date: new Date().toISOString() }),
+                }
+              );
+
+              if (!res.ok) {
+                set({ limitMarked: false }); // сбрасываем флаг, чтобы можно было попытаться снова
+                console.warn("mark limit failed", await res.text());
+                return;
+              }
+
+              const data = await res.json();
+
+              if (data.maxTotalLimit) {
+                useAuthStore
+                  .getState()
+                  .patchUser({ maxTotalLimit: data.maxTotalLimit });
+              }
+            } catch (err) {
+              console.error("Error marking limit:", err);
+              set({ limitMarked: false });
+            }
+          })();
+        }
+
         // restart idle timer
-        const idleMs = get().idleMs ?? 1000;
+        const idleMs = state.idleMs ?? 1000;
         startIdleTimerForState(idleMs);
       },
-
       flush: async () => {
         await flushPending();
       },
@@ -341,6 +389,7 @@ const useClickStore = create<ClickStore>()(
       partialize: (state) => ({
         total: state.total,
         pending: state.pending,
+        maxTotalLimit: state.maxTotalLimit,
       }),
     }
   )

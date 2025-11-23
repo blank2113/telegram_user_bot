@@ -16,8 +16,8 @@ const Friends = () => {
       <div className='flex flex-col items-center gap-2 py-5'>
         <h1 className='text-white text-4xl font-semibold'>Do’stlar</h1>
         <p className='text-white text-center px-3 text-[19px] opacity-90 outline-none'>
-          Har bir taklif qilingan do'stingiz uchun balansingizga 10%,
-          shuningdek, o'yinlar uchun 30 energiya oling
+          Do‘stlarni taklif qiling, har 3 taklif uchun 100 000 so‘mdan daromad
+          oling va har bir do‘stning balansidan foydali foizlarga ega bo‘ling.
         </p>
       </div>
       <CustomButton

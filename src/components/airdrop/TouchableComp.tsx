@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useEffect } from "react";
 import touchAv from "../../assets/images/Touch.webp";
 import coin from "../../assets/images/coin.webp";
 import useClickStore from "../../store/clickStore";
@@ -8,13 +8,14 @@ const TouchableComp = () => {
   const avatarRef = useRef<HTMLImageElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  // const maxTotalLimit = useClickStore((s) => s.maxTotalLimit);
 
-  // useEffect(() => {
-  //   useClickStore
-  //     .getState()
-  //     .init({ endpoint: "/api/clicks", idleMs: 2000, maxRetries: 3 });
-  // }, []);
+  useEffect(() => {
+    useClickStore.getState().init({
+      endpoint: "http://localhost:3000/api/clicks/2",
+      idleMs: 2000,
+      maxRetries: 3,
+    });
+  }, []);
 
   const handleTap = useCallback((e: React.MouseEvent) => {
     if (!avatarRef.current || !wrapperRef.current || !containerRef.current)
@@ -31,6 +32,10 @@ const TouchableComp = () => {
       e.clientY > avatarRect.bottom
     )
       return;
+
+    if (useClickStore.getState().total === 1000) {
+      return;
+    }
 
     // координаты монетки
     const x = e.clientX - wrapperRect.left;
@@ -68,9 +73,10 @@ const TouchableComp = () => {
         containerRef.current?.removeChild(coinEl);
       }
     };
+
     requestAnimationFrame(animate);
 
-    useClickStore.getState().registerClick(1);
+    useClickStore.getState().registerClick(50);
     // scale аватара
     avatarRef.current.style.transform = "scale(1.1)";
     setTimeout(() => {
@@ -81,7 +87,7 @@ const TouchableComp = () => {
   return (
     <div
       ref={wrapperRef}
-      className='relative w-full h-screen'
+      className='relative w-full h-full'
       onClick={handleTap}>
       <div ref={containerRef} className='absolute inset-0 w-full h-full' />
 

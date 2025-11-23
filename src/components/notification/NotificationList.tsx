@@ -1,15 +1,27 @@
-import useNotifyStore from "../../store/notificationStore";
+import { useState } from "react";
+import { Modal } from "../ui/Modal";
+import Bell from "../../assets/icons/bell.svg";
+import { NotificationCard } from "../ui/NotificationCard";
 import { useNotifications } from "../../utils/useNotifications";
+import useNotifyStore from "../../store/notificationStore";
 
 const NotificationList = () => {
-  const userId = "2"; // или достать из authStore
+  const [open, setOpen] = useState(false);
+  const [modalData, setModalData] = useState<{
+    title: string;
+    text: string;
+    id: null | string;
+  }>({
+    title: "",
+    text: "",
+    id: null,
+  });
   const { unread, markRead } = useNotifyStore((s) => s);
-
-  useNotifications(userId);
+  useNotifications("2");
 
   const handleMarkRead = async (ids: string[]) => {
     if (!ids.length) return;
-    await fetch(`http://localhost:3000/api/notifications/mark-read/${userId}`, {
+    await fetch(`http://localhost:3000/api/notifications/mark-read/2`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ids }),
@@ -18,29 +30,51 @@ const NotificationList = () => {
   };
 
   return (
-    <div className='p-4'>
-      <h2 className='text-xl font-bold mb-4'>Уведомления</h2>
-      {unread.length === 0 && <p>Нет новых уведомлений</p>}
-      <ul>
-        {unread.map((n) => (
-          <li key={n.id} className='border-b py-2 flex justify-between'>
-            <span>{n?.payload?.text}</span>
-            <button
-              onClick={() => handleMarkRead([n.id])}
-              className='text-sm text-blue-500'>
-              Прочитать
-            </button>
-          </li>
-        ))}
-      </ul>
-      {unread.length > 0 && (
-        <button
-          onClick={() => handleMarkRead(unread.map((n) => n.id))}
-          className='mt-4 px-3 py-1 bg-blue-500 text-white rounded'>
-          Отметить все как прочитанные
-        </button>
-      )}
-    </div>
+    <>
+      <div className='bg-[#05A2C6CC] rounded-xl w-full h-full overflow-hidden'>
+        <div className='overflow-auto h-full'>
+          {unread.length ? (
+            unread.map((el, i) => {
+              return (
+                <NotificationCard
+                  key={i}
+                  label={`${el.payload?.text}`}
+                  onClick={() => {
+                    setModalData({
+                      title: `${el.payload?.text}`,
+                      text: "",
+                      id: el.id,
+                    });
+                    setOpen(true);
+                  }}
+                />
+              );
+            })
+          ) : (
+            <p className='px-3 py-2'>Sizda hech qanday bildirishnoma yoʻq</p>
+          )}
+        </div>
+      </div>
+
+      <Modal
+        open={open}
+        onClose={() => {
+          handleMarkRead([String(modalData.id)]);
+          setOpen(false);
+        }}>
+        <img
+          className='absolute left-1/2 -translate-1/2 -top-3 w-20'
+          src={Bell}
+          alt=''
+        />
+        <h2 className='text-xl font-semibold mb-3 pr-6 text-white mt-[50px] text-center'>
+          {modalData.title}
+        </h2>
+        <div className='h-full overflow-auto max-h-80'>
+          <p className='mb-3 mt-5 text-white'>{modalData.text}</p>
+        </div>
+      </Modal>
+    </>
   );
 };
 
