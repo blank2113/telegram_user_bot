@@ -21,7 +21,7 @@ const Games = () => {
       </div>
 
       <CustomBackground
-        title="Tikish g'ildiragi"
+        title='Bonus 14 G’ildiragi'
         btn={
           <CustomButton title='O’ynash' className='text-[12px] font-semibold' />
         }
@@ -35,7 +35,7 @@ const Games = () => {
         onClick={() => navigate("/wheel")}
       />
       <CustomBackground
-        title='Tangani aylantiring'
+        title='Burgut/Quyruq'
         btn={
           <CustomButton title='O’ynash' className='text-[12px] font-semibold' />
         }

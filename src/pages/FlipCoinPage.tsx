@@ -223,7 +223,7 @@ tushib ketdi ${result === "heads" ? "Burgut" : "Quyruqlar"}`
 
           {/* Форма и кнопки — с дополнительным паддингом сверху (pt-24) чтобы не налезали на монету */}
           <div className='flex flex-col gap-3'>
-            <label className='text-xs text-white'>Taklif</label>
+            <label className='text-xs text-white'>Minimal 5.000 so’m</label>
             <input
               value={bet}
               onChange={(e) => onBetChange(e.target.value)}
@@ -253,7 +253,7 @@ tushib ketdi ${result === "heads" ? "Burgut" : "Quyruqlar"}`
                   color: "white",
                 }}
                 className='flex-1 py-3 rounded-lg text-white font-semibold text-sm shadow-sm disabled:opacity-60'>
-                Quyruqlar
+                Quyruq
               </button>
             </div>
 

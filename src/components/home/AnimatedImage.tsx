@@ -12,6 +12,7 @@ const AnimatedImage = () => {
         minWidth: SIZE,
         minHeight: SIZE,
         position: "relative",
+        margin: "0 auto",
         borderRadius: 12,
         overflow: "hidden",
         background:

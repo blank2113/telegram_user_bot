@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import type { Links } from "./_types";
 import icon1 from "../../assets/images/icon.webp";
 import icon2 from "../../assets/images/icon2.webp";
-import icon3 from "../../assets/images/icon3.webp";
+import icon3 from "../../assets/images/tap.png";
 import icon4 from "../../assets/images/icon4.webp";
 import icon5 from "../../assets/images/icon5.webp";
 
