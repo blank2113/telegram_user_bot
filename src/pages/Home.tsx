@@ -7,7 +7,6 @@ import useStatusPaymentStore from "../store/statusPayment";
 import StatusPayment from "../components/home/StatusPayment";
 import PaymentStatusAlert from "../components/home/PaymentStatusAlert";
 import AnimatedImage from "../components/home/AnimatedImage";
-
 import vip from "../assets/images/vip (1).png";
 import Snowfall from "../components/ui/SnowFlake";
 import purse from "../assets/images/purse.png";

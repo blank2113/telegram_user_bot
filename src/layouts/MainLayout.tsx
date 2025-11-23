@@ -1,5 +1,5 @@
 import { useState, useEffect, Suspense, useRef } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 import bg from "../assets/images/mainbg.webp";
 import UnAuthorizePage from "../pages/UnAuthorizePage";
 import Navigation from "../components/navigation/Navigation";
@@ -13,6 +13,7 @@ const MainLayout = () => {
   const setUser = useAuthStore((s) => s.setUser);
   const user = useAuthStore((s) => s.user);
   const resetCleanupRef = useRef<() => void>(() => {});
+  const { start } = useParams();
 
   // --- Fetch user по id ---
   const fetchUser = async () => {
@@ -109,6 +110,7 @@ const MainLayout = () => {
                 <p className='text-white text-4xl font-semibold'>Loading...</p>
               </div>
             }>
+            <p>{start}</p>
             <Outlet />
           </Suspense>
           <Navigation />
