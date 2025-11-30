@@ -17,6 +17,16 @@ const MainLayout = () => {
   const searchParams = new URLSearchParams(location.search);
   const start = searchParams.get("start");
 
+  let parsedData = null;
+  if (start) {
+    try {
+      const decoded = atob(start);
+      parsedData = JSON.parse(decoded);
+    } catch (err) {
+      console.error("Ошибка парсинга Base64 JSON:", err);
+    }
+  }
+
   // --- Fetch user по id ---
   const fetchUser = async () => {
     try {
@@ -113,7 +123,7 @@ const MainLayout = () => {
               </div>
             }>
             <p className='bg-red-600 text-white text-2xl w-full py-5 px-3'>
-              Id:{start}
+              User ID: {parsedData?.user_id ?? "Не указан"}
             </p>
             <Outlet />
           </Suspense>
