@@ -1,5 +1,5 @@
 import { useState, useEffect, Suspense, useRef } from "react";
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet, useLocation, useParams } from "react-router-dom";
 import bg from "../assets/images/mainbg.webp";
 import UnAuthorizePage from "../pages/UnAuthorizePage";
 import Navigation from "../components/navigation/Navigation";
@@ -13,7 +13,9 @@ const MainLayout = () => {
   const setUser = useAuthStore((s) => s.setUser);
   const user = useAuthStore((s) => s.user);
   const resetCleanupRef = useRef<() => void>(() => {});
-  const { start } = useParams();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const start = searchParams.get("start");
 
   // --- Fetch user по id ---
   const fetchUser = async () => {
