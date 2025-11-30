@@ -1,5 +1,5 @@
 import { useState, useEffect, Suspense, useRef } from "react";
-import { Outlet, useLocation, useParams } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import bg from "../assets/images/mainbg.webp";
 import UnAuthorizePage from "../pages/UnAuthorizePage";
 import Navigation from "../components/navigation/Navigation";
