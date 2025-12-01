@@ -28,10 +28,8 @@ const MainLayout = () => {
   }
 
   // --- Fetch user по id ---
-  const fetchUser = async () => {
+  const fetchUser = async (userId: string) => {
     try {
-      const userId = parsedData?.user_id;
-
       if (!userId) {
         console.warn("Нет user_id → пользователь аноним");
         return;
@@ -54,7 +52,7 @@ const MainLayout = () => {
   };
 
   useEffect(() => {
-    fetchUser();
+    fetchUser(parsedData?.user_id);
   }, [parsedData?.user_id]);
 
   useEffect(() => {
