@@ -30,8 +30,10 @@ const MainLayout = () => {
   // --- Fetch user по id ---
   const fetchUser = async () => {
     try {
-      // const userId = 12345;
-      const res = await fetch(`http://localhost:3000/api/users/profile/12345`);
+      const userId = parsedData?.user_id;
+      const res = await fetch(
+        `http://localhost:3000/api/users/profile/${userId}`
+      );
       if (!res.ok) {
         console.error("Ошибка получения пользователя:", res.statusText);
         return;
@@ -48,7 +50,7 @@ const MainLayout = () => {
 
   useEffect(() => {
     fetchUser();
-  }, []);
+  }, [parsedData]);
 
   useEffect(() => {
     resetCleanupRef.current?.();
@@ -122,9 +124,6 @@ const MainLayout = () => {
                 <p className='text-white text-4xl font-semibold'>Loading...</p>
               </div>
             }>
-            <p className='bg-red-600 text-white text-2xl w-full py-5 px-3'>
-              User ID: {parsedData?.user_id ?? "Не указан"}
-            </p>
             <Outlet />
           </Suspense>
           <Navigation />
