@@ -55,7 +55,7 @@ const MainLayout = () => {
 
   useEffect(() => {
     fetchUser();
-  }, [parsedData]);
+  }, [parsedData?.user_id]);
 
   useEffect(() => {
     resetCleanupRef.current?.();
