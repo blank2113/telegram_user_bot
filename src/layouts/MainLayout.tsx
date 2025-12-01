@@ -31,18 +31,23 @@ const MainLayout = () => {
   const fetchUser = async () => {
     try {
       const userId = parsedData?.user_id;
+
+      if (!userId) {
+        console.warn("Нет user_id → пользователь аноним");
+        return;
+      }
+
       const res = await fetch(
         `http://localhost:3000/api/users/profile/${userId}`
       );
+
       if (!res.ok) {
         console.error("Ошибка получения пользователя:", res.statusText);
         return;
       }
-      const data = await res.json();
 
-      if (data) {
-        setUser(data);
-      }
+      const data = await res.json();
+      setUser(data);
     } catch (err) {
       console.error("Ошибка при запросе пользователя:", err);
     }
