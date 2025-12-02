@@ -17,7 +17,7 @@ RUN npm install -g serve
 COPY --from=build /app/dist ./dist
 
 # Expose порт для внутреннего Docker-сети (Nginx может проксировать сюда)
-EXPOSE 4000
+EXPOSE 80
 
 # Запускаем сервер отдачи статики
 CMD ["serve", "-s", "dist", "-l", "80"]
