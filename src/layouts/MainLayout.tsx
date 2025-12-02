@@ -33,7 +33,7 @@ const MainLayout = () => {
   }
   const userId = parsedData?.user_id ?? null;
 
-  const { data: fetchedUser, isLoading, isError } = useUser(userId);
+  const { data: fetchedUser, isError } = useUser(userId);
 
   if (fetchedUser && fetchedUser.id !== localUser?.id?.toString()) {
     setUser(fetchedUser);
@@ -60,7 +60,7 @@ const MainLayout = () => {
       style={{ background: `url(${bg}) no-repeat center center / cover` }}>
       <div className='absolute inset-0 bg-linear-to-b opacity-45 from-[#09152A] to-[#67C5F8]' />
 
-      {isMobile && !isLoading && !isError && userId ? (
+      {isMobile && !isError && userId ? (
         <div className='h-full w-full flex flex-col items-center justify-center relative z-20'>
           <Header />
           <Suspense
