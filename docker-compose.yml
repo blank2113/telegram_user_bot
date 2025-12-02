@@ -1,6 +1,6 @@
 services:
   frontend:
-    build: ./telegram_user_bot
+    build: .
     container_name: frontend
     networks:
       - app_network
