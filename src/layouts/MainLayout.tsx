@@ -35,7 +35,7 @@ const MainLayout = () => {
 
   const { data: fetchedUser, isLoading, isError } = useUser(userId);
 
-  if (fetchedUser && fetchedUser.id !== localUser?.id) {
+  if (fetchedUser && fetchedUser.id !== localUser?.id?.toString()) {
     setUser(fetchedUser);
   }
 
