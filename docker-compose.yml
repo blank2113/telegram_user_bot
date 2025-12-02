@@ -2,8 +2,8 @@ services:
   frontend:
     build: .
     ports:
-      - "80:80"
-      - "443:443"
+      - "8080:80"   # HTTP
+      - "8443:443"  # HTTPS
     volumes:
       - /etc/letsencrypt:/etc/letsencrypt:ro
     restart: unless-stopped
