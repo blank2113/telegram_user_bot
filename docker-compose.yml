@@ -1,6 +1,7 @@
 services:
   frontend:
     build: .
+    container_name: frontend
     expose:
       - "80"
     networks:
