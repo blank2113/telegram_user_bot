@@ -9,8 +9,8 @@ RUN npm run build
 # Stage 2: Nginx
 FROM nginx:alpine
 COPY --from=build /app/dist /usr/share/nginx/html
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf 
-COPY ./ssl/cloudflare /etc/ssl/cloudflare
+COPY ./nginx/frontend.conf /etc/nginx/conf.d/default.conf
+COPY /etc/ssl/cloudflare /etc/ssl/cloudflare:ro
 
-EXPOSE 80
+EXPOSE 80 443
 CMD ["nginx", "-g", "daemon off;"]
