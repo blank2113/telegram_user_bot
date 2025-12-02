@@ -5,7 +5,7 @@ import useAuthStore from "../store/authStore";
 
 const fetchUserById = async (userId: string): Promise<User> => {
   if (!userId) throw new Error("No user id");
-  const base = import.meta.env.VITE_API_BASE ?? import.meta.env.BASE_URL ?? "";
+  const base = import.meta.env.API_URL ?? import.meta.env.API_URL ?? "";
   const res = await fetch(`${base}/users/profile/${userId}`);
   if (!res.ok) {
     const txt = await res.text().catch(() => res.statusText);
