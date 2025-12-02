@@ -1,9 +1,8 @@
+version: '3.9'
 services:
   frontend:
-    build: .
-    ports:
-      - "8080:80"   # HTTP
-      - "8443:443"  # HTTPS
-    volumes:
-      - /etc/letsencrypt:/etc/letsencrypt:ro
+    build: ./frontend
+    container_name: frontend
+    expose:
+      - "80"
     restart: unless-stopped
