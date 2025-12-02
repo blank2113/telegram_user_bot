@@ -1,6 +1,7 @@
-frontend:
-  build: .
-  container_name: frontend
-  expose:
-    - "80"  # доступно только внутри сети
-  restart: unless-stopped
+services:
+  frontend:
+    build: .
+    container_name: frontend
+    expose:
+      - "80"
+    restart: unless-stopped
