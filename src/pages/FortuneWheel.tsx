@@ -14,6 +14,8 @@ import {
 import NiceSelector from "../components/ui/NiceSelector";
 import NiceCoinInput from "../components/ui/NiceCoinInput";
 import PlayButton from "../components/ui/PlayButton";
+import useAuthStore from "../store/authStore";
+import useWheelStore from "../store/wheelStore";
 
 Konva.angleDeg = false;
 // const degToRad = (deg: number) => (deg * Math.PI) / 180;
@@ -55,8 +57,14 @@ const FourtuneWheel: FC = () => {
     scale: 1,
   });
   const stageContainerRef = useRef(null);
-
+  const user = useAuthStore((s) => s.user);
+  const patchUser = useAuthStore((s) => s.patchUser);
+  const bet = useWheelStore((s) => s.bet);
+  const setBet = useWheelStore((s) => s.setBet);
+  const setChosenNumber = useWheelStore((s) => s.setChosenNumber);
+  const chosenNumber = useWheelStore((s) => s.chosenNumber);
   const [isSpinning, setIsSpinning] = useState(false);
+  console.log(chosenNumber);
 
   const wheelRef = useRef(null);
   const pointerRef = useRef(null);
@@ -169,10 +177,52 @@ const FourtuneWheel: FC = () => {
     }).play();
   }
 
-  const getValueAndSpin = () => {
-    const value = Math.floor(Math.random() * WEDGES.length);
-    console.log("DEBUG: Target value - ", value);
-    spinTo(value);
+  const getValueAndSpin = async () => {
+    if (isSpinning) return;
+
+    if (!user) return;
+
+    try {
+      setIsSpinning(true);
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/wheel/spin`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: user.id,
+            bet: bet,
+            chosenNumber: chosenNumber,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        console.error("Ошибка запроса:", response.status);
+        setIsSpinning(false);
+        return;
+      }
+
+      const data = await response.json();
+      console.log("Spin result:", data);
+
+      const targetIndex =
+        data?.data?.pickedNumber ?? Math.floor(Math.random() * WEDGES.length);
+
+      // запуск анимации колеса к выбранному сектору
+      spinTo(targetIndex);
+
+      // обновляем баланс пользователя
+      if (data?.data?.newBalance !== undefined) {
+        patchUser({ balance: data.data.newBalance });
+      }
+    } catch (err) {
+      console.error("Ошибка при спине:", err);
+      setIsSpinning(false);
+    }
   };
 
   return (
@@ -308,13 +358,22 @@ const FourtuneWheel: FC = () => {
             </div>
 
             <div className='flex flex-col gap-6 w-full '>
-              <NiceSelector />
+              <NiceSelector
+                value={chosenNumber}
+                onChange={(e) => setChosenNumber(e)}
+              />
 
               <div className='flex gap-4 flex-col'>
-                <NiceCoinInput />
+                <NiceCoinInput
+                  value={bet}
+                  onChange={(e) => setBet(Number(e))}
+                />
 
                 <PlayButton
-                  className='w-full'
+                  className='w-full disabled:opacity-45'
+                  disabled={
+                    isSpinning || bet < 5000 || Number(user?.balance) < bet
+                  }
                   isSpinning={isSpinning}
                   onClick={getValueAndSpin}>
                   O’ynash

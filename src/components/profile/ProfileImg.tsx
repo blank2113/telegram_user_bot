@@ -23,10 +23,13 @@ const ProfileImg = () => {
         formData.append("avatar", file);
         formData.append("name", "");
 
-        const res = await fetch(`http://localhost:3000/api/users/${user?.id}`, {
-          method: "PUT",
-          body: formData,
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/users/${user?.id}`,
+          {
+            method: "PUT",
+            body: formData,
+          }
+        );
 
         const data = await res.json();
         if (!res.ok) {
@@ -40,7 +43,6 @@ const ProfileImg = () => {
       }
     }
   };
-  console.log(user);
 
   return (
     <div className='relative z-20'>
@@ -48,7 +50,11 @@ const ProfileImg = () => {
         onClick={handleClick}
         className='w-40 h-40 bg-[#24E6F3CC] flex items-center justify-center rounded-full border-4 border-[#24E6F3CC] overflow-hidden'>
         <img
-          src={user?.avatar ? `http://localhost:3000${user.avatar}` : image}
+          src={
+            user?.avatar
+              ? `https://api.itformanomberone.com${user.avatar}`
+              : image
+          }
           alt='Profile'
           className='w-full h-full object-cover'
         />

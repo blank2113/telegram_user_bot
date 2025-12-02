@@ -3,15 +3,16 @@ import { useRef, useCallback, useEffect } from "react";
 import touchAv from "../../assets/images/Touch.webp";
 import coin from "../../assets/images/coin.webp";
 import useClickStore from "../../store/clickStore";
+import useAuthStore from "../../store/authStore";
 
 const TouchableComp = () => {
   const avatarRef = useRef<HTMLImageElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-
+  const user = useAuthStore((s) => s.user);
   useEffect(() => {
     useClickStore.getState().init({
-      endpoint: "http://localhost:3000/api/clicks/2",
+      endpoint: `${import.meta.env.VITE_API_URL}/clicks/${user?.id}`,
       idleMs: 2000,
       maxRetries: 3,
     });

@@ -12,17 +12,21 @@ import Snowfall from "../components/ui/SnowFlake";
 import purse from "../assets/images/purse.png";
 import money from "../assets/images/money-stack.png";
 import bonus from "../assets/images/gift.png";
+import BalanceMenu from "../components/home/BalanceMenu";
 
 const StatusMenuMemo = React.memo(StatusMenu);
+const BalanceMenuMemo = React.memo(BalanceMenu);
 const StatusPaymentMemo = React.memo(StatusPayment);
 const PaymentStatusAlertMemo = React.memo(PaymentStatusAlert);
 
 const Home = () => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [modalOpen2, setModalOpen2] = useState<boolean>(false);
   const { open, setOpen, paymentStatusOpen, setPaymentStatusOpen } =
     useStatusPaymentStore((state) => state);
 
   const handleCloseModal = useCallback(() => setModalOpen(false), []);
+  const handleCloseModal2 = useCallback(() => setModalOpen2(false), []);
   // const handleCloseStatus = useCallback(() => setOpen(false), []);
   // const handleClosePayment = useCallback(() => setPaymentStatusOpen(false), []);
 
@@ -33,7 +37,7 @@ const Home = () => {
       <h1 className='text-center text-[25px]  text-white font-semibold leading-tight'>
         Statusizni yaxshilang. Bonus oling. Pulni kiriting va echib oling
       </h1>
-      <div className='w-full flex flex-col items-center justify-end gap-3'>
+      <div className='w-full flex flex-col items-center justify-end gap-3 pt-8'>
         <CustomBackground
           title='Status yaxshilash'
           img={<img src={vip} className='w-[50px] h-[50px]' />}
@@ -52,7 +56,7 @@ const Home = () => {
           btn={
             <CustomButton
               title='Davom etish'
-              onClick={() => console.log(1)}
+              onClick={() => setModalOpen2(true)}
               className='text-[12px] font-medium'
             />
           }
@@ -86,6 +90,11 @@ const Home = () => {
         open={modalOpen}
         setOpen={setModalOpen}
         component={<StatusMenuMemo setClose={handleCloseModal} />}
+      />
+      <CustomPopup
+        open={modalOpen2}
+        setOpen={setModalOpen2}
+        component={<BalanceMenuMemo setClose={handleCloseModal2} />}
       />
       <CustomPopup
         open={open}

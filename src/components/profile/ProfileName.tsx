@@ -12,6 +12,7 @@ const ProfileName = () => {
   useEffect(() => {
     if (isEditing) inputRef.current?.focus();
   }, [isEditing]);
+  console.log(user);
 
   useEffect(() => {
     // Если user обновился из стора — синхронизируем tempName
@@ -30,10 +31,13 @@ const ProfileName = () => {
       const formData = new FormData();
       formData.append("name", tempName.trim());
 
-      const res = await fetch(`http://localhost:3000/api/users/${user?.id}`, {
-        method: "PUT",
-        body: formData,
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/users/${user?.id}`,
+        {
+          method: "PUT",
+          body: formData,
+        }
+      );
 
       const data = await res.json();
 

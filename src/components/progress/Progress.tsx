@@ -1,21 +1,37 @@
 import useClickStore from "../../store/clickStore";
+import useAuthStore from "../../store/authStore";
 
-// Progress.tsx
 type Props = {
   max?: number; // максимум шкалы (по умолчанию 100)
   height?: number; // высота в px (по умолчанию 10)
 };
 
 export default function Progress({ height = 10 }: Props) {
-  const value = useClickStore((s) => s.total);
-  const maxTotalLimit = 1000;
-  const safeMax = Math.max(1, Number(maxTotalLimit));
+  const total = useClickStore((s) => s.total);
+  const user = useAuthStore((s) => s.user);
+
+  let value = total;
+
+  const maxTotalLimit = Number(user?.maxTotalLimit ? 1000 : 0); // дефолт 1000 если лимит есть
+  const safeMax = Math.max(1, maxTotalLimit);
+
+  // Проверка на 12 часов с момента установки лимита
+  if (user?.maxTotalLimit) {
+    const limitDate = new Date(user.maxTotalLimit);
+    const now = new Date();
+    const hoursDiff = (now.getTime() - limitDate.getTime()) / (1000 * 60 * 60);
+
+    if (hoursDiff < 12) {
+      value = safeMax; // шкала заполнена полностью
+    }
+  }
+
   const clamped = Math.max(0, Math.min(safeMax, value));
   const pct = (clamped / safeMax) * 100;
 
   return (
     <div
-      className='absolute top-1 w-full overflow-hidden rounded-full bg-[#1a2745]/70 '
+      className='absolute top-1 w-full overflow-hidden rounded-full bg-[#1a2745]/70'
       style={{ height }}
       role='progressbar'
       aria-valuemin={0}
@@ -29,7 +45,6 @@ export default function Progress({ height = 10 }: Props) {
         className='relative h-full rounded-full transition-[width] duration-500 ease-out overflow-hidden'
         style={{
           width: `${pct}%`,
-          // чтобы «носик» оставался круглым на маленьких значениях:
           minWidth: clamped > 0 ? height : 0,
           background: "linear-gradient(90deg,#7DF1F6 0%,#3BD7E6 100%)",
         }}>

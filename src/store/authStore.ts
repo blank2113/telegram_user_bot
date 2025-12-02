@@ -10,6 +10,15 @@ export type User = {
   level?: number;
   avatar?: string | null;
   maxTotalLimit?: string | null;
+  referrals?: [];
+  payments?: [];
+  withdrawals?: [];
+  freeSpins?: number;
+  maxWithdraw?: bigint;
+  cashback?: number;
+  statusMaxEnergy?: number;
+  wheelSpins?: [];
+  flipCoin?: [];
 };
 
 type AuthState = {

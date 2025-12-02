@@ -329,11 +329,11 @@ const useClickStore = create<ClickStore>()(
               }
 
               const res = await fetch(
-                `http://localhost:3000/api/clicks/maxLimit/${userId}`,
+                `${import.meta.env.VITE_API_URL}/clicks/maxLimit/${userId}`,
                 {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ date: new Date().toISOString() }),
+                  body: JSON.stringify({ date: new Date() }),
                 }
               );
 

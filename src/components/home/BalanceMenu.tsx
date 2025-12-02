@@ -55,7 +55,7 @@ const list = [
   },
 ];
 
-const StatusMenu = ({ setClose }: Props) => {
+const BalanceMenu = ({ setClose }: Props) => {
   const { setObj, setOpen } = useStatusPaymentStore((state) => state);
 
   return (
@@ -106,4 +106,4 @@ const StatusMenu = ({ setClose }: Props) => {
   );
 };
 
-export default StatusMenu;
+export default BalanceMenu;

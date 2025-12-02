@@ -27,9 +27,10 @@ export const useUser = (userId?: string | null) => {
     // v5: cacheTime -> gcTime (gc = garbage-collection time)
     gcTime: 1000 * 60 * 5, // 5 min before GC when query becomes inactive
     staleTime: 1000 * 60 * 2, // 2 min stale time
-    retry: 1,
+    retry: 3,
     // note: onSuccess/onError removed in v5 — useEffect below handles side effects
   });
+  console.log(query);
 
   // side-effect: синхронизируем authStore при успешном получении
   useEffect(() => {

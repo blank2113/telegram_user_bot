@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 type Props = {
-  value?: number;
+  value: number | null;
   onChange?: (n: number) => void;
   min?: number; // minimal allowed value (default 50)
   max?: number | null;
@@ -15,10 +15,10 @@ type Props = {
 export default function NiceCoinInput({
   value: controlledValue,
   onChange,
-  min = 50,
+  min = 5000,
   max = null,
   step = 10,
-  presets = [50, 100, 200],
+  presets = [5000, 100000, 200000],
   placeholder = "sizning tikishingiz?",
   className = "",
 }: Props) {

@@ -4,9 +4,11 @@ import Bell from "../../assets/icons/bell.svg";
 import { NotificationCard } from "../ui/NotificationCard";
 import { useNotifications } from "../../utils/useNotifications";
 import useNotifyStore from "../../store/notificationStore";
+import useAuthStore from "../../store/authStore";
 
 const NotificationList = () => {
   const [open, setOpen] = useState(false);
+  const user = useAuthStore((s) => s.user);
   const [modalData, setModalData] = useState<{
     title: string;
     text: string;
@@ -17,15 +19,18 @@ const NotificationList = () => {
     id: null,
   });
   const { unread, markRead } = useNotifyStore((s) => s);
-  useNotifications("2");
+  useNotifications(user?.id);
 
   const handleMarkRead = async (ids: string[]) => {
     if (!ids.length) return;
-    await fetch(`http://localhost:3000/api/notifications/mark-read/2`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ids }),
-    });
+    await fetch(
+      `${import.meta.env.VITE_API_URL}/notifications/mark-read/${user?.id}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids }),
+      }
+    );
     markRead(ids);
   };
 

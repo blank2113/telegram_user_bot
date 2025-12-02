@@ -37,6 +37,7 @@ const ProfileStatsItem = memo(
 const ProfileStats = () => {
   const user = useAuthStore((s) => s.user);
   const navigate = useNavigate();
+  console.log(user);
 
   return (
     <div className='relative z-10 w-full px-3 grid grid-cols-2 gap-3'>
@@ -75,9 +76,12 @@ const ProfileStats = () => {
         title='Do’stlar'
         comp={
           <div className='pt-3 pb-2 flex flex-col gap-2'>
-            <p className='text-white font-bold text-[25px]'>14 do'stal</p>
+            <p className='text-white font-bold text-[25px]'>
+              {user?.referrals?.length}
+            </p>
             <p className='text-green-600 font-semibold text-sm'>
-              {formatNumber(14 * 1000)} so'm / har kun
+              {formatNumber(Number(user?.referrals?.length) * 1000)} so'm / har
+              kun
             </p>
             <CustomButton
               title="Do'stlarni taklif qiling"

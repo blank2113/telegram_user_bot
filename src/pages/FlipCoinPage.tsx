@@ -5,20 +5,22 @@ import front from "../assets/images/front.png";
 import CustomButton from "../components/ui/CustomButton";
 import CustomPopup from "../components/ui/CustomPopup";
 import CoinLeaderBoard from "../components/games/CoinLeaderBoard";
+import useAuthStore from "../store/authStore";
 
-type CoinSide = "heads" | "tails";
+type CoinSide = "HEADS" | "TAILS";
 
 const clamp = (v: number, min: number, max: number) =>
   Math.max(min, Math.min(max, v));
 
 const CoinFlip: FC = () => {
-  const [balance, setBalance] = useState<number>(1000);
-  const [bet, setBet] = useState<number>(10);
+  const user = useAuthStore((s) => s.user);
+  const [bet, setBet] = useState<number>(1000);
   const [message, setMessage] = useState<string>("");
   const [isFlipping, setIsFlipping] = useState<boolean>(false);
   const [lastResult, setLastResult] = useState<CoinSide | null>(null);
   const rotationRef = useRef<number>(0);
   const [modal, setModal] = useState<boolean>(false);
+  const patchUser = useAuthStore((s) => s.patchUser);
 
   const controls = useAnimation();
 
@@ -63,7 +65,7 @@ const CoinFlip: FC = () => {
       setMessage("10 dan kattaroq taklif kiriting");
       return;
     }
-    if (stake > balance) {
+    if (stake > Number(user?.balance)) {
       setMessage("Mablag'lar yetarli emas");
       return;
     }
@@ -71,14 +73,38 @@ const CoinFlip: FC = () => {
     setMessage("");
     setIsFlipping(true);
 
-    const result: CoinSide = Math.random() < 0.5 ? "heads" : "tails";
-    const spins = Math.floor(Math.random() * 3) + (isMobile ? 3 : 4);
-    const extra = result === "heads" ? 0 : 180;
-    const base = Math.round(rotationRef.current / 360) * 360;
-    const targetRotation = base + spins * 360 + extra;
-    rotationRef.current = targetRotation;
-
     try {
+      // делаем запрос на сервер
+      const response = await fetch(
+        "https://api.itformanomberone.com/api/flipCoin/play",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: 1,
+            choice: choice,
+            amount: stake,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        setMessage(`Ошибка сервера: ${response.status}`);
+        setIsFlipping(false);
+        return;
+      }
+
+      const data = await response.json();
+
+      const spins = Math.floor(Math.random() * 3) + (isMobile ? 3 : 4);
+      const extra = data?.result === "heads" ? 0 : 180;
+      const base = Math.round(rotationRef.current / 360) * 360;
+      const targetRotation = base + spins * 360 + extra;
+      rotationRef.current = targetRotation;
+
+      // запускаем анимацию
       await controls.start(
         {
           rotateX: targetRotation,
@@ -87,21 +113,25 @@ const CoinFlip: FC = () => {
         },
         coinTransition
       );
+      console.log(data);
 
-      setLastResult(result);
-      const won = result === choice;
-      setBalance((b) => (won ? b + stake : Math.max(0, b - stake)));
+      setLastResult(data?.result);
+
+      const won = data.won;
       setMessage(
         won
-          ? `Siz g'alaba qozondingiz ${stake} — 
-tushib ketdi ${result === "heads" ? "Burgut" : "Quyruqlar"}`
-          : `Siz g'alaba qozondingiz ${stake} — 
-tushib ketdi ${result === "heads" ? "Burgut" : "Quyruqlar"}`
+          ? `Siz g'alaba qozondingiz ${stake} — tushib ketdi ${
+              data?.result === "heads" ? "Burgut" : "Quyruqlar"
+            }`
+          : `Siz yutqazdingiz ${stake} — tushib ketdi ${
+              data?.result === "heads" ? "Burgut" : "Quyruqlar"
+            }`
       );
+      patchUser({ balance: data.newBalance });
       haptic(won ? "light" : "medium");
     } catch (err) {
-      console.error("Flip animation failed:", err);
-      setMessage("Произошла ошибка при броске");
+      console.error("Ошибка запроса flipCoin:", err);
+      setMessage("Произошла ошибка при обращении к серверу");
     } finally {
       setIsFlipping(false);
     }
@@ -112,10 +142,9 @@ tushib ketdi ${result === "heads" ? "Burgut" : "Quyruqlar"}`
   }, [controls]);
 
   const onBetChange = (val: string) => {
-    if (val === "") return setBet(0);
     const n = Number(val);
-    if (!Number.isFinite(n)) return;
-    setBet(clamp(Math.round(n), 1, 1_000_000));
+    if (Number.isNaN(n)) return; // проверка на NaN
+    setBet(clamp(Math.round(n), 1000, 1_000_000));
   };
 
   return (
@@ -132,14 +161,14 @@ tushib ketdi ${result === "heads" ? "Burgut" : "Quyruqlar"}`
           <div>
             <div className='text-sm text-white relative z-10'>Balans</div>
             <div className='text-lg font-semibold text-yellow-400 relative z-10'>
-              {balance}
+              {user?.balance}
             </div>
           </div>
           <div className='text-right'>
             <div className='text-xs text-white relative z-10'>Oxirgi</div>
             <div className='text-sm text-yellow-400 relative z-10'>
               {lastResult
-                ? lastResult === "heads"
+                ? lastResult === "HEADS"
                   ? "Burgut"
                   : "Quyruqlar"
                 : "—"}
@@ -227,15 +256,17 @@ tushib ketdi ${result === "heads" ? "Burgut" : "Quyruqlar"}`
             <input
               value={bet}
               onChange={(e) => onBetChange(e.target.value)}
-              type='number'
-              min={1}
               className='w-full p-3 rounded-lg border border-gray-100 text-sm text-white'
+              type='number' // добавлено
+              min={1000}
             />
 
             <div className='flex gap-3'>
               <button
-                onClick={() => flipCoin("heads")}
-                disabled={isFlipping}
+                onClick={() => flipCoin("HEADS")}
+                disabled={
+                  isFlipping || bet < 1000 || bet > (user?.balance ?? 0)
+                }
                 aria-pressed={isFlipping}
                 style={{
                   background: "linear-gradient(90deg,#7C3AED,#4F46E5)",
@@ -244,9 +275,12 @@ tushib ketdi ${result === "heads" ? "Burgut" : "Quyruqlar"}`
                 className='flex-1 py-3 rounded-lg text-white font-semibold text-sm shadow-sm disabled:opacity-60'>
                 Burgut
               </button>
+
               <button
-                onClick={() => flipCoin("tails")}
-                disabled={isFlipping}
+                onClick={() => flipCoin("TAILS")}
+                disabled={
+                  isFlipping || bet < 1000 || bet > (user?.balance ?? 0)
+                }
                 aria-pressed={isFlipping}
                 style={{
                   background: "linear-gradient(90deg,#059669,#10B981)",

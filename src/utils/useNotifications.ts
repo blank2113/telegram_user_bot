@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import useNotifyStore from "../store/notificationStore";
 
-export const useNotifications = (userId: string) => {
+export const useNotifications = (userId: string | number | undefined) => {
   const add = useNotifyStore((s) => s.add);
   const setUnread = useNotifyStore((s) => s.setUnread);
 
@@ -10,13 +10,13 @@ export const useNotifications = (userId: string) => {
     if (!userId) return;
 
     // Подгружаем непрочитанные уведомления при монтировании
-    fetch(`http://localhost:3000/api/notifications/unread/${userId}`)
+    fetch(`${import.meta.env.VITE_API_URL}/notifications/unread/${userId}`)
       .then((res) => res.json())
       .then((arr) => setUnread(arr))
       .catch(console.error);
 
     const evtSource = new EventSource(
-      `http://localhost:3000/api/notifications/events?userId=${userId}`
+      `${import.meta.env.VITE_API_URL}/notifications/events?userId=${userId}`
     );
 
     // создаём объект аудио
@@ -38,7 +38,6 @@ export const useNotifications = (userId: string) => {
         const data = JSON.parse(e.data);
         data.batch.forEach((notif: any) => {
           add(notif);
-          // проигрываем звук
           playBeep();
         });
       } catch (err) {

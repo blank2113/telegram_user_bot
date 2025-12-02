@@ -42,12 +42,12 @@ const ListItem = memo(({ name, sum }: ListItemType) => {
 
 const FriendsList = () => {
   const [referrals, setReferrals] = useState<ReferralType[]>([]);
-  const userId = useAuthStore((s) => s.user?.id);
+  const user = useAuthStore((s) => s.user);
 
   const fetchReferrals = async () => {
     try {
       const res = await fetch(
-        `http://localhost:3000/api/users/referrals/${userId}`
+        `${import.meta.env.VITE_API_URL}/users/referrals/${user?.id}`
       );
       const data = await res.json();
       if (res.ok && data.success) {

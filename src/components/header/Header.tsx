@@ -13,7 +13,7 @@ const Header = () => {
   const { count, reset } = useNotifyStore((s) => s);
   const user = useAuthStore((s) => s.user);
 
-  useNotifications("2");
+  useNotifications(user?.id);
 
   return (
     <header className='w-full px-3 relative flex items-center justify-between min-h-[60px] py-2 gap-5'>
@@ -25,7 +25,7 @@ const Header = () => {
       </Link>
 
       <Link to='/profile' className='flex items-center justify-center gap-3'>
-        <CustomAvatar img={`http://localhost:3000${user?.avatar}`} />
+        <CustomAvatar img={`https://api.itformanomberone.com${user?.avatar}`} />
         <div className='flex flex-col gap-0.5 items-start justify-center'>
           <p
             className='text-white font-semibold max-w-[110px] truncate'

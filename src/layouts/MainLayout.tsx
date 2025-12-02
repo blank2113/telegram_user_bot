@@ -1,28 +1,24 @@
-import { Suspense, useMemo } from "react";
+import { useState, useEffect, Suspense, useRef } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import bg from "../assets/images/mainbg.webp";
 import UnAuthorizePage from "../pages/UnAuthorizePage";
 import Navigation from "../components/navigation/Navigation";
-import Header from "../components/header/Header";
 import useClickStore from "../store/clickStore";
+import Header from "../components/header/Header";
 import useAuthStore from "../store/authStore";
-import { useUser } from "../hooks/useUser";
-import { useIsMobile } from "../hooks/useIsMobile";
-import { useSendBeaconOnHide } from "../hooks/useSendBeaconOnHide";
-import { useScheduleResetForUser } from "../hooks/useScheduleResetForUser";
+import { scheduleResetFor } from "../utils/scheduleResetFor";
+import useNotifyStore from "../store/notificationStore";
 
 const MainLayout = () => {
-  const location = useLocation();
-  const searchParams = useMemo(
-    () => new URLSearchParams(location.search),
-    [location.search]
-  );
-  const start = searchParams.get("start");
-
+  const [isMobile, setIsMobile] = useState<boolean>(false);
   const setUser = useAuthStore((s) => s.setUser);
-  const localUser = useAuthStore((s) => s.user);
-
-  let parsedData: { user_id?: string } | null = null;
+  const user = useAuthStore((s) => s.user);
+  const resetCleanupRef = useRef<() => void>(() => {});
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const start = searchParams.get("start");
+  const count = useNotifyStore((s) => s.count);
+  let parsedData = null;
   if (start) {
     try {
       const decoded = atob(start);
@@ -31,36 +27,102 @@ const MainLayout = () => {
       console.error("Ошибка парсинга Base64 JSON:", err);
     }
   }
-  const userId = parsedData?.user_id ?? null;
 
-  const { data: fetchedUser, isError } = useUser(userId);
+  // --- Fetch user по id ---
+  const fetchUser = async (userId: string) => {
+    try {
+      if (!userId) {
+        console.warn("Нет user_id → пользователь аноним");
+        return;
+      }
 
-  if (fetchedUser && fetchedUser.id !== localUser?.id?.toString()) {
-    setUser(fetchedUser);
-  }
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/users/profile/${userId}`
+      );
 
-  const isMobile = useIsMobile(768);
-  useScheduleResetForUser(localUser?.id?.toString(), localUser?.maxTotalLimit);
-  const endpoint = useClickStore.getState().endpoint;
-  useSendBeaconOnHide({
-    endpoint,
-    getPayload: () => {
-      const state = useClickStore.getState();
-      if (!state.pending || state.pending <= 0) return null;
-      return { clicks: state.pending, ts: Date.now() };
-    },
-    onSuccess: () => {
-      useClickStore.setState(() => ({ pending: 0 }));
-    },
-  });
+      if (!res.ok) {
+        console.error("Ошибка получения пользователя:", res.statusText);
+        return;
+      }
+
+      const data = await res.json();
+
+      console.log(data);
+
+      setUser(data.data);
+    } catch (err) {
+      console.error("Ошибка при запросе пользователя:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchUser(parsedData?.user_id);
+  }, [count, parsedData]);
+
+  useEffect(() => {
+    resetCleanupRef.current?.();
+
+    if (user?.id) {
+      resetCleanupRef.current = scheduleResetFor(user?.id, user.maxTotalLimit);
+    }
+
+    return () => {
+      resetCleanupRef.current?.();
+    };
+  }, [user?.id, user?.maxTotalLimit]);
+
+  useEffect(() => {
+    const checkScreen = () => setIsMobile(window.innerWidth < 768);
+    checkScreen();
+    window.addEventListener("resize", checkScreen);
+
+    return () => window.removeEventListener("resize", checkScreen);
+  }, []);
+
+  // --- Сохраняем клики при уходе со страницы ---
+  useEffect(() => {
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") {
+        const state = useClickStore.getState();
+        const pending = state.pending;
+        const endpoint = state.endpoint;
+        if (pending > 0 && endpoint) {
+          try {
+            const body = JSON.stringify({ clicks: pending, ts: Date.now() });
+            const ok = navigator.sendBeacon(
+              endpoint,
+              new Blob([body], { type: "application/json" })
+            );
+            if (ok) {
+              useClickStore.setState((s) => ({
+                pending: Math.max(0, s.pending - pending),
+              }));
+            }
+          } catch {}
+        }
+      }
+    };
+
+    const onBeforeUnload = (_: BeforeUnloadEvent) => onVisibility();
+
+    document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("beforeunload", onBeforeUnload);
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("beforeunload", onBeforeUnload);
+    };
+  }, []);
 
   return (
     <main
       className='min-h-screen w-screen h-svh flex flex-col items-center justify-center relative overflow-hidden'
-      style={{ background: `url(${bg}) no-repeat center center / cover` }}>
+      style={{
+        background: `url(${bg}) no-repeat center center / cover`,
+      }}>
       <div className='absolute inset-0 bg-linear-to-b opacity-45 from-[#09152A] to-[#67C5F8]' />
 
-      {isMobile && !isError && userId ? (
+      {isMobile ? (
         <div className='h-full w-full flex flex-col items-center justify-center relative z-20'>
           <Header />
           <Suspense
