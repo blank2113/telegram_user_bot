@@ -5,9 +5,11 @@ services:
     ports:
       - "4000:4000"
     networks:
-      - my_network
+      - my_project_network
     restart: unless-stopped
 
+
 networks:
-  my_network:
-    external: true
+  default:
+    external:
+      name: my_project_network
