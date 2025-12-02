@@ -49,7 +49,7 @@ const StatusMenu = ({ setClose }: Props) => {
   const { setObj, setOpen } = useStatusPaymentStore((state) => state);
 
   return (
-    <div>
+    <div className='max-h-[450px] h-full overflow-y-scroll'>
       <p className='text-white text-3xl font-semibold mb-4 text-center'>
         Status sotib olish
       </p>
