@@ -1,12 +1,9 @@
 services:
   frontend:
     build: .
-    container_name: frontend
-    networks:
-      - app_network
-    expose:
-      - "80"
-
-networks:
-  app_network:
-    external: true
+    ports:
+      - "8080:80"   # HTTP
+      - "8443:443"  # HTTPS
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    restart: unless-stopped
