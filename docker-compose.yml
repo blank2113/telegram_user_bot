@@ -1,11 +1,6 @@
-services:
-  frontend:
-    build: .
-    ports:
-      - "8080:80"   # HTTP
-      - "8443:443"  # HTTPS
-    expose:
-      - "80"  
-    volumes:
-      - /etc/letsencrypt:/etc/letsencrypt:ro
-    restart: unless-stopped
+frontend:
+  build: .
+  container_name: frontend
+  expose:
+    - "80"  # доступно только внутри сети
+  restart: unless-stopped
