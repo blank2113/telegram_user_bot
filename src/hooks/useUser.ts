@@ -21,7 +21,7 @@ export const useUser = (userId?: string | null) => {
     queryKey: ["user", userId],
     queryFn: async () => {
       if (!userId) throw new Error("No user id");
-      return fetchUserById(userId);
+      return await fetchUserById(userId);
     },
     enabled: Boolean(userId),
     // v5: cacheTime -> gcTime (gc = garbage-collection time)
