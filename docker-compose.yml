@@ -10,6 +10,5 @@ services:
 
 
 networks:
-  default:
-    external:
-      name: my_project_network
+  my_project_network:
+    external: true
