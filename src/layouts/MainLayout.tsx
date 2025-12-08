@@ -116,7 +116,7 @@ const MainLayout = () => {
 
   return (
     <main
-      className='min-h-screen w-screen h-svh flex flex-col items-center justify-center relative overflow-hidden'
+      className='min-h-screen w-screen h-svh  relative overflow-hidden'
       style={{
         background: `url(${bg}) no-repeat center center / cover`,
       }}>
