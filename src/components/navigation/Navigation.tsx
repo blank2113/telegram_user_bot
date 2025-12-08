@@ -7,20 +7,18 @@ import icon4 from "../../assets/images/icon4.webp";
 import icon5 from "../../assets/images/icon5.webp";
 import React, { useMemo } from "react";
 
-const links: Links[] = useMemo(
-  () => [
-    { id: 1, name: "Magazin", link: "/home", icon: icon1 },
-    { id: 2, name: "O’yinlar", link: "/games", icon: icon2 },
-    { id: 3, name: "Tap", link: "/", icon: icon3 },
-    { id: 4, name: "Do’stlar", link: "/friends", icon: icon4 },
-    { id: 5, name: "Sozlamalar", link: "/profile", icon: icon5 },
-  ],
-  []
-);
-
 const Navigation = React.memo(() => {
   const { pathname } = useLocation();
-
+  const links: Links[] = useMemo(
+    () => [
+      { id: 1, name: "Magazin", link: "/home", icon: icon1 },
+      { id: 2, name: "O’yinlar", link: "/games", icon: icon2 },
+      { id: 3, name: "Tap", link: "/", icon: icon3 },
+      { id: 4, name: "Do’stlar", link: "/friends", icon: icon4 },
+      { id: 5, name: "Sozlamalar", link: "/profile", icon: icon5 },
+    ],
+    []
+  );
   return (
     <nav className='w-full px-3 z-50 absolute bottom-3'>
       <div className='flex justify-between items-center w-full p-2 bg-linear-to-r from-[#7CCFE6] to-[#60C3E1] rounded-xl shadow-3xl'>
