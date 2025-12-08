@@ -16,7 +16,7 @@ const Header = () => {
   useNotifications(user?.id);
 
   return (
-    <header className='w-full px-3 relative flex items-center justify-between min-h-[60px] py-2 gap-5'>
+    <header className='w-full px-3 relative flex items-center justify-between min-h-[60px] py-2 gap-5 bg-transparent'>
       <Link to={"/home"} className={token.block}>
         <img src={coin} alt='coin' className='w-[30px] h-[30px]' />
         <p className='text-white font-semibold'>

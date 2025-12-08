@@ -20,7 +20,7 @@ const Navigation = React.memo(() => {
     []
   );
   return (
-    <nav className='w-full px-3 z-50 absolute bottom-6'>
+    <nav className='w-full px-3 pb-5'>
       <div className='flex justify-between items-center w-full p-2 bg-linear-to-r from-[#7CCFE6] to-[#60C3E1] rounded-xl shadow-3xl'>
         {links.map((el) => {
           const active = pathname === el.link;
