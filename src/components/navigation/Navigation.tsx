@@ -5,16 +5,20 @@ import icon2 from "../../assets/images/icon2.webp";
 import icon3 from "../../assets/images/tap.png";
 import icon4 from "../../assets/images/icon4.webp";
 import icon5 from "../../assets/images/icon5.webp";
+import React, { useMemo } from "react";
 
-const links: Links[] = [
-  { id: 1, name: "Magazin", link: "/home", icon: icon1 },
-  { id: 2, name: "O’yinlar", link: "/games", icon: icon2 },
-  { id: 3, name: "Tap", link: "/", icon: icon3 },
-  { id: 4, name: "Do’stlar", link: "/friends", icon: icon4 },
-  { id: 5, name: "Sozlamalar", link: "/profile", icon: icon5 },
-];
+const links: Links[] = useMemo(
+  () => [
+    { id: 1, name: "Magazin", link: "/home", icon: icon1 },
+    { id: 2, name: "O’yinlar", link: "/games", icon: icon2 },
+    { id: 3, name: "Tap", link: "/", icon: icon3 },
+    { id: 4, name: "Do’stlar", link: "/friends", icon: icon4 },
+    { id: 5, name: "Sozlamalar", link: "/profile", icon: icon5 },
+  ],
+  []
+);
 
-const Navigation = () => {
+const Navigation = React.memo(() => {
   const { pathname } = useLocation();
 
   return (
@@ -33,7 +37,10 @@ const Navigation = () => {
               <img
                 src={el.icon}
                 alt={el.name}
-                className={`w-6 h-6 transition-transform duration-300 ${
+                width={24}
+                height={24}
+                loading='lazy'
+                className={`transition-transform duration-300 ${
                   active ? "scale-110" : "scale-100"
                 }`}
                 style={{ willChange: "transform" }}
@@ -45,6 +52,6 @@ const Navigation = () => {
       </div>
     </nav>
   );
-};
+});
 
 export default Navigation;
